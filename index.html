@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keuangan - Queen Laundry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50/50 text-slate-800 antialiased min-h-screen pb-10">
+
+    <div class="max-w-6xl mx-auto p-4 md:p-8">
+        
+        <!-- Navbar Atas & Burger Menu -->
+        <nav class="bg-white px-6 py-4 rounded-3xl shadow-sm border border-slate-100 mb-6 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-sky-600 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-sky-600/20">🧺</div>
+                <div>
+                    <h1 class="font-bold text-slate-800 text-base md:text-lg">Queen Laundry</h1>
+                </div>
+            </div>
+
+            <!-- Tombol Burger Mobile -->
+            <div class="md:hidden">
+                <button onclick="toggleMobileMenu()" class="p-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Menu Desktop Navigasi -->
+            <div class="hidden md:flex items-center gap-2 bg-slate-100/80 p-1.5 rounded-2xl">
+                <button onclick="gantiHalaman('dashboard')" id="navDashboard" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-white text-slate-800 shadow-sm">Beranda & Input</button>
+                <button onclick="gantiHalaman('masuk')" id="navMasuk" class="px-4 py-2 rounded-xl text-xs font-bold transition text-slate-600 hover:text-slate-800">📥 Duit Masuk</button>
+                <button onclick="gantiHalaman('keluar')" id="navKeluar" class="px-4 py-2 rounded-xl text-xs font-bold transition text-slate-600 hover:text-slate-800">📤 Duit Keluar</button>
+                <button onclick="gantiHalaman('utang')" id="navUtang" class="px-4 py-2 rounded-xl text-xs font-bold transition text-slate-600 hover:text-slate-800">📝 Daftar Utang</button>
+            </div>
+        </nav>
+
+        <!-- Menu Dropdown Mobile -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border border-slate-100 rounded-3xl p-4 shadow-xl mb-6 space-y-2">
+            <button onclick="gantiHalaman('dashboard'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition">🏠 Beranda & Input</button>
+            <button onclick="gantiHalaman('masuk'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-sky-600 hover:bg-sky-50 transition">📥 Halaman Duit Masuk</button>
+            <button onclick="gantiHalaman('keluar'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 transition">📤 Halaman Duit Keluar</button>
+            <button onclick="gantiHalaman('utang'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-amber-600 hover:bg-amber-50 transition">📝 Halaman Daftar Utang</button>
+        </div>
+
+        <!-- Header & Ringkasan Keuangan -->
+        <header class="bg-gradient-to-r from-sky-600 to-indigo-600 text-white p-6 md:p-8 rounded-3xl shadow-xl shadow-sky-900/10 mb-8 flex flex-col gap-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div class="space-y-1">
+                    <div class="inline-block bg-white/15 backdrop-blur-md px-3 py-1 rounded-full text-xs font-medium text-sky-100 mb-1">✨ Ringkasan Keuangan</div>
+                    <h2 class="text-xl md:text-2xl font-bold tracking-tight">Status Kas Queen Laundry</h2>
+                    <p class="text-sky-100 text-xs md:text-sm opacity-90">Pantau seluruh pemasukan, pengeluaran, metode pembayaran, dan sisa utang.</p>
+                </div>
+            </div>
+            
+            <!-- Kartu Total Utama -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="bg-white/10 backdrop-blur-md border border-white/10 px-4 py-3 rounded-2xl flex flex-col justify-between">
+                    <span class="block text-[11px] text-sky-200 uppercase font-bold tracking-wider">Total Masuk</span>
+                    <span id="totalPemasukan" class="font-bold text-base md:text-lg text-white mt-1">Rp 0</span>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md border border-white/10 px-4 py-3 rounded-2xl flex flex-col justify-between">
+                    <span class="block text-[11px] text-rose-200 uppercase font-bold tracking-wider">Total Keluar</span>
+                    <span id="totalPengeluaran" class="font-bold text-base md:text-lg text-white mt-1">Rp 0</span>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md border border-white/10 px-4 py-3 rounded-2xl flex flex-col justify-between">
+                    <span class="block text-[11px] text-emerald-200 uppercase font-bold tracking-wider">Saldo Bersih Kas</span>
+                    <span id="saldoBersih" class="font-bold text-base md:text-lg text-white mt-1">Rp 0</span>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md border border-white/10 px-4 py-3 rounded-2xl flex flex-col justify-between">
+                    <span class="block text-[11px] text-amber-200 uppercase font-bold tracking-wider">Sisa Utang</span>
+                    <span id="totalUtang" class="font-bold text-base md:text-lg text-white mt-1">Rp 0</span>
+                </div>
+            </div>
+
+            <!-- Rincian Metode Duit Masuk -->
+            <div class="border-t border-white/15 pt-4">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="text-xs">📥</span>
+                    <span class="block text-xs font-bold text-sky-200 uppercase tracking-wider">Rincian Saldo Masuk Berdasarkan Metode:</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="bg-white/5 backdrop-blur-sm px-3 py-2 rounded-xl border border-white/5 text-center">
+                        <span class="block text-[10px] text-sky-200 font-semibold">💵 Cash</span>
+                        <span id="subMasukCash" class="text-xs md:text-sm font-bold text-white">Rp 0</span>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-sm px-3 py-2 rounded-xl border border-white/5 text-center">
+                        <span class="block text-[10px] text-sky-200 font-semibold">📱 QRIS</span>
+                        <span id="subMasukQris" class="text-xs md:text-sm font-bold text-white">Rp 0</span>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-sm px-3 py-2 rounded-xl border border-white/5 text-center">
+                        <span class="block text-[10px] text-sky-200 font-semibold">🏦 BRI</span>
+                        <span id="subMasukBri" class="text-xs md:text-sm font-bold text-white">Rp 0</span>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-sm px-3 py-2 rounded-xl border border-white/5 text-center">
+                        <span class="block text-[10px] text-sky-200 font-semibold">👛 DANA</span>
+                        <span id="subMasukDana" class="text-xs md:text-sm font-bold text-white">Rp 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rincian Metode Duit Keluar -->
+            <div class="border-t border-white/15 pt-4">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="text-xs">📤</span>
+                    <span class="block text-xs font-bold text-rose-200 uppercase tracking-wider">Rincian Pengeluaran Berdasarkan Sumber Dana:</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="bg-white/5 backdrop-blur-sm px-3 py-2 rounded-xl border border-white/5 text-center">
+                        <span class="block text-[10px] text-rose-200 font-semibold">💵 Cash</span>
+                        <span id="subKeluarCash" class="text-xs md:text-sm font-bold text-white">Rp 0</span>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-sm px-3 py-2 rounded-xl border border-white/5 text-center">
+                        <span class="block text-[10px] text-rose-200 font-semibold">📱 QRIS</span>
+                        <span id="subKeluarQris" class="text-xs md:text-sm font-bold text-white">Rp 0</span>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-sm px-3 py-2 rounded-xl border border-white/5 text-center">
+                        <span class="block text-[10px] text-rose-200 font-semibold">🏦 BRI</span>
+                        <span id="subKeluarBri" class="text-xs md:text-sm font-bold text-white">Rp 0</span>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur-sm px-3 py-2 rounded-xl border border-white/5 text-center">
+                        <span class="block text-[10px] text-rose-200 font-semibold">👛 DANA</span>
+                        <span id="subKeluarDana" class="text-xs md:text-sm font-bold text-white">Rp 0</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ================= HALAMAN 1: BERANDA & INPUT (DEFAULT) ================= -->
+        <div id="pageDashboard" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Form Duit Masuk / DP -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 transition hover:shadow-md">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center font-bold text-lg">📥</div>
+                        <div>
+                            <h3 class="font-bold text-slate-800">Catat Duit Masuk</h3>
+                            <p class="text-xs text-slate-400">Pemasukan Lunas atau DP</p>
+                        </div>
+                    </div>
+                    <form id="formPemasukan" onsubmit="tambahDataPemasukan(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Tanggal Transaksi</label>
+                            <input type="date" id="tglMasuk" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Jenis Transaksi</label>
+                            <select id="jenisTransaksi" onchange="toggleFormDp()" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none transition">
+                                <option value="lunas">Lunas (Bayar Penuh)</option>
+                                <option value="dp">DP (Uang Muka)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5" id="labelKet">Keterangan / Nama Pelanggan</label>
+                            <input type="text" id="ketMasuk" required placeholder="Cth: Cuci kiloan 5kg / Ibu Ani" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5" id="labelJml">Jumlah Bayar / DP (Rp)</label>
+                            <input type="number" id="jmlMasuk" required placeholder="Cth: 25000" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none transition">
+                        </div>
+                        <!-- Input Total Harga khusus jika DP dipilih -->
+                        <div id="containerTotalHarga" class="hidden">
+                            <label class="block text-xs font-semibold text-amber-600 mb-1.5">Total Harga Keseluruhan (Rp)</label>
+                            <input type="number" id="totalHargaDp" placeholder="Cth: 50000" class="w-full px-3.5 py-2.5 bg-amber-50/50 border border-amber-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none transition">
+                            <p class="text-[10px] text-slate-400 mt-1">Sisa kekurangan otomatis masuk ke Daftar Utang.</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Metode Pembayaran</label>
+                            <select id="metodeMasuk" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none transition">
+                                <option value="Cash">Cash (Tunai)</option>
+                                <option value="QRIS">QRIS</option>
+                                <option value="BRI">BRI</option>
+                                <option value="DANA">DANA</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2.5 rounded-xl text-sm transition shadow-lg shadow-sky-600/20 active:scale-[0.98]">Simpan Duit Masuk</button>
+                    </form>
+                </div>
+
+                <!-- Form Duit Keluar -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 transition hover:shadow-md">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-lg">📤</div>
+                        <div>
+                            <h3 class="font-bold text-slate-800">Catat Duit Keluar</h3>
+                            <p class="text-xs text-slate-400">Pengeluaran operasional</p>
+                        </div>
+                    </div>
+                    <form id="formPengeluaran" onsubmit="tambahDataKeluar(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Tanggal Transaksi</label>
+                            <input type="date" id="tglKeluar" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-rose-500 focus:outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Keterangan</label>
+                            <input type="text" id="ketKeluar" required placeholder="Cth: Beli deterjen / listrik" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-rose-500 focus:outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Jumlah (Rp)</label>
+                            <input type="number" id="jmlKeluar" required placeholder="Cth: 50000" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-rose-500 focus:outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Sumber Dana / Metode</label>
+                            <select id="metodeKeluar" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-rose-500 focus:outline-none transition">
+                                <option value="Cash">Cash (Tunai)</option>
+                                <option value="QRIS">QRIS</option>
+                                <option value="BRI">BRI</option>
+                                <option value="DANA">DANA</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2.5 rounded-xl text-sm transition shadow-lg shadow-rose-600/20 active:scale-[0.98]">Simpan Duit Keluar</button>
+                    </form>
+                </div>
+
+                <!-- Form Utang -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 transition hover:shadow-md">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg">📝</div>
+                        <div>
+                            <h3 class="font-bold text-slate-800">Catat Utang</h3>
+                            <p class="text-xs text-slate-400">Catat pelanggan belum bayar</p>
+                        </div>
+                    </div>
+                    <form id="formUtang" onsubmit="tambahUtang(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Tanggal Utang</label>
+                            <input type="date" id="tglUtang" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Nama Pelanggan</label>
+                            <input type="text" id="namaUtang" required placeholder="Cth: Ibu Siti" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Jumlah Utang (Rp)</label>
+                            <input type="number" id="jmlUtang" required placeholder="Cth: 40000" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none transition">
+                        </div>
+                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-xl text-sm transition shadow-lg shadow-amber-600/20 active:scale-[0.98]">Simpan Utang</button>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- Tombol Pintasan Cepat ke Halaman Riwayat -->
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <h4 class="font-bold text-slate-800 text-sm">Ingin melihat riwayat lengkap atau daftar utang?</h4>
+                    <p class="text-xs text-slate-400">Pilih menu khusus di bawah ini untuk melihat data secara penuh.</p>
+                </div>
+                <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                    <button onclick="gantiHalaman('masuk')" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-sky-50 text-sky-700 font-bold text-xs hover:bg-sky-100 transition">📥 Duit Masuk</button>
+                    <button onclick="gantiHalaman('keluar')" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-rose-50 text-rose-700 font-bold text-xs hover:bg-rose-100 transition">📤 Duit Keluar</button>
+                    <button onclick="gantiHalaman('utang')" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-amber-50 text-amber-700 font-bold text-xs hover:bg-amber-100 transition">📝 Daftar Utang</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= HALAMAN 2: DUIT MASUK ================= -->
+        <div id="pageMasuk" class="space-y-6 hidden">
+            <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800">📥 Halaman Riwayat Duit Masuk</h3>
+                        <p class="text-xs text-slate-400">Seluruh catatan pemasukan jasa laundry beserta metodenya.</p>
+                    </div>
+                    <button onclick="gantiHalaman('dashboard')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">← Kembali ke Beranda</button>
+                </div>
+                <div class="overflow-x-auto max-h-[500px] overflow-y-auto pr-1">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-slate-500 sticky top-0 uppercase text-[10px] tracking-wider font-bold">
+                            <tr>
+                                <th class="p-3.5 rounded-l-xl">Tanggal</th>
+                                <th class="p-3.5">Keterangan</th>
+                                <th class="p-3.5">Metode</th>
+                                <th class="p-3.5">Jumlah</th>
+                                <th class="p-3.5 text-center rounded-r-xl">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelPemasukanBody" class="divide-y divide-slate-50"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= HALAMAN 3: DUIT KELUAR ================= -->
+        <div id="pageKeluar" class="space-y-6 hidden">
+            <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800">📤 Halaman Riwayat Duit Keluar</h3>
+                        <p class="text-xs text-slate-400">Seluruh catatan pengeluaran operasional beserta sumber dananya.</p>
+                    </div>
+                    <button onclick="gantiHalaman('dashboard')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">← Kembali ke Beranda</button>
+                </div>
+                <div class="overflow-x-auto max-h-[500px] overflow-y-auto pr-1">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-slate-500 sticky top-0 uppercase text-[10px] tracking-wider font-bold">
+                            <tr>
+                                <th class="p-3.5 rounded-l-xl">Tanggal</th>
+                                <th class="p-3.5">Keterangan</th>
+                                <th class="p-3.5">Sumber Dana</th>
+                                <th class="p-3.5">Jumlah</th>
+                                <th class="p-3.5 text-center rounded-r-xl">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelPengeluaranBody" class="divide-y divide-slate-50"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= HALAMAN 4: DAFTAR UTANG ================= -->
+        <div id="pageUtang" class="space-y-6 hidden">
+            <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800">📝 Halaman Daftar Utang Pelanggan</h3>
+                        <p class="text-xs text-slate-400">*Klik tombol status untuk melunasi otomatis masuk ke duit masuk.</p>
+                    </div>
+                    <button onclick="gantiHalaman('dashboard')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">← Kembali ke Beranda</button>
+                </div>
+                <div class="overflow-x-auto max-h-[500px] overflow-y-auto pr-1">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-slate-500 sticky top-0 uppercase text-[10px] tracking-wider font-bold">
+                            <tr>
+                                <th class="p-3.5 rounded-l-xl">Tanggal</th>
+                                <th class="p-3.5">Nama Pelanggan</th>
+                                <th class="p-3.5">Jumlah Utang</th>
+                                <th class="p-3.5 text-center">Status</th>
+                                <th class="p-3.5 text-center rounded-r-xl">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelUtangBody" class="divide-y divide-slate-50"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tombol Reset / Hapus Semua Data (Bawah) -->
+        <div class="flex flex-col sm:flex-row items-center justify-between pt-6 gap-4">
+            <div class="text-center sm:text-left">
+                <p class="text-xs text-slate-400 font-medium">✨ Queen Laundry Finance App • Dibuat oleh <span class="font-bold text-slate-600">A. Ashraf</span> untuk kemudahan dalam pendataan duit.</p>
+            </div>
+            <button onclick="konfirmasiReset()" class="bg-white hover:bg-rose-50 hover:text-rose-600 text-slate-500 border border-slate-200 px-5 py-3 rounded-2xl text-xs font-semibold transition flex items-center gap-2 shadow-sm">
+                🗑️ Reset / Hapus Semua Data Keuangan
+            </button>
+        </div>
+
+    </div>
+
+    <!-- ================= MODAL KUSTOM PILIHAN METODE PELUNASAN ================= -->
+    <div id="modalMetode" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 space-y-4 animate-in fade-in zoom-in duration-200">
+            <div class="text-center space-y-1">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xl mx-auto mb-2">💵</div>
+                <h3 class="font-bold text-slate-800 text-lg">Pilih Metode Pembayaran</h3>
+                <p id="modalSubInfo" class="text-xs text-slate-400">Pilih metode masuk untuk pelunasan utang ini:</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2 pt-2">
+                <button onclick="pilihMetodePelunasan('Cash')" class="p-3 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-slate-700 font-bold text-xs transition flex flex-col items-center gap-1">
+                    <span class="text-base">💵</span> Cash
+                </button>
+                <button onclick="pilihMetodePelunasan('QRIS')" class="p-3 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-slate-700 font-bold text-xs transition flex flex-col items-center gap-1">
+                    <span class="text-base">📱</span> QRIS
+                </button>
+                <button onclick="pilihMetodePelunasan('BRI')" class="p-3 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-slate-700 font-bold text-xs transition flex flex-col items-center gap-1">
+                    <span class="text-base">🏦</span> BRI
+                </button>
+                <button onclick="pilihMetodePelunasan('DANA')" class="p-3 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-slate-700 font-bold text-xs transition flex flex-col items-center gap-1">
+                    <span class="text-base">👛</span> DANA
+                </button>
+            </div>
+
+            <button onclick="tutupModalMetode()" class="w-full mt-2 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs transition">Batal</button>
+        </div>
+    </div>
+
+    <!-- ================= MODAL KUSTOM KONFIRMASI RESET / HAPUS SEMUA ================= -->
+    <div id="modalReset" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 space-y-4 animate-in fade-in zoom-in duration-200 text-center">
+            <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-xl mx-auto mb-2">⚠️</div>
+            <h3 class="font-bold text-slate-800 text-lg">Hapus Semua Data?</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Yakin ingin menghapus seluruh data keuangan Queen Laundry? Tindakan ini tidak dapat dibatalkan.</p>
+            
+            <div class="flex gap-2 pt-2">
+                <button onclick="tutupModalReset()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs transition">Batal</button>
+                <button onclick="eksekusiResetData()" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs transition shadow-lg shadow-rose-600/20">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Logika & Navigasi -->
+    <script>
+        let pemasukan = JSON.parse(localStorage.getItem('queen_pemasukan')) || [];
+        let pengeluaran = JSON.parse(localStorage.getItem('queen_pengeluaran')) || [];
+        let utang = JSON.parse(localStorage.getItem('queen_utang')) || [];
+        let selectedUtangId = null;
+
+        // Set default tanggal hari ini pada form saat pertama kali dibuka
+        document.addEventListener("DOMContentLoaded", () => {
+            const hariIni = new Date().toISOString().split('T')[0];
+            const inputTglMasuk = document.getElementById('tglMasuk');
+            const inputTglKeluar = document.getElementById('tglKeluar');
+            const inputTglUtang = document.getElementById('tglUtang');
+            if(inputTglMasuk && !inputTglMasuk.value) inputTglMasuk.value = hariIni;
+            if(inputTglKeluar && !inputTglKeluar.value) inputTglKeluar.value = hariIni;
+            if(inputTglUtang && !inputTglUtang.value) inputTglUtang.value = hariIni;
+        });
+
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(angka);
+        }
+
+        function formatTanggal(tglStr) {
+            if (!tglStr) return '-';
+            const bagian = tglStr.split('-');
+            if (bagian.length !== 3) return tglStr;
+            const tahun = bagian[0];
+            const bulanIndo = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            const bulan = bulanIndo[parseInt(bagian[1])] || bagian[1];
+            const hari = bagian[2];
+            return `${hari} ${bulan} ${tahun}`;
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function toggleFormDp() {
+            const jenis = document.getElementById('jenisTransaksi').value;
+            const containerTotal = document.getElementById('containerTotalHarga');
+            const labelJml = document.getElementById('labelJml');
+            const inputTotal = document.getElementById('totalHargaDp');
+
+            if (jenis === 'dp') {
+                containerTotal.classList.remove('hidden');
+                inputTotal.required = true;
+                labelJml.innerText = "Jumlah DP / Dibayar (Rp)";
+            } else {
+                containerTotal.classList.add('hidden');
+                inputTotal.required = false;
+                inputTotal.value = '';
+                labelJml.innerText = "Jumlah (Rp)";
+            }
+        }
+
+        function gantiHalaman(target) {
+            document.getElementById('pageDashboard').classList.add('hidden');
+            document.getElementById('pageMasuk').classList.add('hidden');
+            document.getElementById('pageKeluar').classList.add('hidden');
+            document.getElementById('pageUtang').classList.add('hidden');
+
+            document.getElementById('navDashboard').className = "px-4 py-2 rounded-xl text-xs font-bold transition text-slate-600 hover:text-slate-800";
+            document.getElementById('navMasuk').className = "px-4 py-2 rounded-xl text-xs font-bold transition text-slate-600 hover:text-slate-800";
+            document.getElementById('navKeluar').className = "px-4 py-2 rounded-xl text-xs font-bold transition text-slate-600 hover:text-slate-800";
+            document.getElementById('navUtang').className = "px-4 py-2 rounded-xl text-xs font-bold transition text-slate-600 hover:text-slate-800";
+
+            if(target === 'dashboard') {
+                document.getElementById('pageDashboard').classList.remove('hidden');
+                document.getElementById('navDashboard').className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-white text-slate-800 shadow-sm";
+            } else if(target === 'masuk') {
+                document.getElementById('pageMasuk').classList.remove('hidden');
+                document.getElementById('navMasuk').className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-white text-sky-700 shadow-sm";
+            } else if(target === 'keluar') {
+                document.getElementById('pageKeluar').classList.remove('hidden');
+                document.getElementById('navKeluar').className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-white text-rose-700 shadow-sm";
+            } else if(target === 'utang') {
+                document.getElementById('pageUtang').classList.remove('hidden');
+                document.getElementById('navUtang').className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-white text-amber-700 shadow-sm";
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function simpanData() {
+            localStorage.setItem('queen_pemasukan', JSON.stringify(pemasukan));
+            localStorage.setItem('queen_pengeluaran', JSON.stringify(pengeluaran));
+            localStorage.setItem('queen_utang', JSON.stringify(utang));
+            render();
+        }
+
+        function tambahDataPemasukan(e) {
+            e.preventDefault();
+            const tanggal = document.getElementById('tglMasuk').value;
+            const jenis = document.getElementById('jenisTransaksi').value;
+            const ket = document.getElementById('ketMasuk').value;
+            const jumlah = parseFloat(document.getElementById('jmlMasuk').value);
+            const metode = document.getElementById('metodeMasuk').value;
+
+            if (jenis === 'dp') {
+                const totalHarga = parseFloat(document.getElementById('totalHargaDp').value) || 0;
+                const sisaUtang = totalHarga - jumlah;
+
+                pemasukan.push({ 
+                    id: Date.now(), 
+                    tanggal: tanggal,
+                    ket: `DP - ${ket}`, 
+                    jumlah: jumlah, 
+                    metode: metode 
+                });
+
+                if (sisaUtang > 0) {
+                    utang.push({
+                        id: Date.now() + 1,
+                        tanggal: tanggal,
+                        nama: `${ket} (Kurang DP)`,
+                        jumlah: sisaUtang,
+                        lunas: false
+                    });
+                }
+            } else {
+                pemasukan.push({ 
+                    id: Date.now(), 
+                    tanggal: tanggal,
+                    ket, 
+                    jumlah, 
+                    metode 
+                });
+            }
+
+            document.getElementById('formPemasukan').reset();
+            const hariIni = new Date().toISOString().split('T')[0];
+            document.getElementById('tglMasuk').value = hariIni;
+            toggleFormDp();
+            gantiHalaman('masuk');
+            simpanData();
+        }
+
+        function tambahDataKeluar(e) {
+            e.preventDefault();
+            const tanggal = document.getElementById('tglKeluar').value;
+            const ket = document.getElementById('ketKeluar').value;
+            const jumlah = parseFloat(document.getElementById('jmlKeluar').value);
+            const metode = document.getElementById('metodeKeluar').value;
+
+            pengeluaran.push({ 
+                id: Date.now(), 
+                tanggal: tanggal, 
+                ket, 
+                jumlah, 
+                metode 
+            });
+
+            document.getElementById('formPengeluaran').reset();
+            const hariIni = new Date().toISOString().split('T')[0];
+            document.getElementById('tglKeluar').value = hariIni;
+            gantiHalaman('keluar'); 
+            simpanData();
+        }
+
+        function hapusData(id, jenis) {
+            if (jenis === 'pemasukan') {
+                pemasukan = pemasukan.filter(item => item.id !== id);
+            } else if (jenis === 'pengeluaran') {
+                pengeluaran = pengeluaran.filter(item => item.id !== id);
+            } else {
+                utang = utang.filter(item => item.id !== id);
+            }
+            simpanData();
+        }
+
+        function tambahUtang(e) {
+            e.preventDefault();
+            const tanggal = document.getElementById('tglUtang').value;
+            const nama = document.getElementById('namaUtang').value;
+            const jumlah = parseFloat(document.getElementById('jmlUtang').value);
+            
+            utang.push({ 
+                id: Date.now(), 
+                tanggal: tanggal, 
+                nama, 
+                jumlah, 
+                lunas: false 
+            });
+
+            document.getElementById('formUtang').reset();
+            const hariIni = new Date().toISOString().split('T')[0];
+            document.getElementById('tglUtang').value = hariIni;
+            gantiHalaman('utang'); 
+            simpanData();
+        }
+
+        function toggleLunas(id) {
+            const item = utang.find(u => u.id === id);
+            if(item) {
+                if(!item.lunas) {
+                    selectedUtangId = id;
+                    document.getElementById('modalSubInfo').innerText = `Pilih metode pembayaran untuk: ${item.nama} (${formatRupiah(item.jumlah)})`;
+                    document.getElementById('modalMetode').classList.remove('hidden');
+                } else {
+                    item.lunas = false;
+                    pemasukan = pemasukan.filter(p => p.ket !== `Pelunasan Utang - ${item.nama}` || p.jumlah !== item.jumlah);
+                    simpanData();
+                }
+            }
+        }
+
+        function pilihMetodePelunasan(metodeFinal) {
+            const item = utang.find(u => u.id === selectedUtangId);
+            if(item) {
+                item.lunas = true;
+                const hariIni = new Date().toISOString().split('T')[0];
+                pemasukan.push({
+                    id: Date.now(),
+                    tanggal: hariIni,
+                    ket: `Pelunasan Utang - ${item.nama}`,
+                    jumlah: item.jumlah,
+                    metode: metodeFinal
+                });
+                simpanData();
+            }
+            tutupModalMetode();
+        }
+
+        function tutupModalMetode() {
+            document.getElementById('modalMetode').classList.add('hidden');
+            selectedUtangId = null;
+        }
+
+        function konfirmasiReset() {
+            document.getElementById('modalReset').classList.remove('hidden');
+        }
+
+        function tutupModalReset() {
+            document.getElementById('modalReset').classList.add('hidden');
+        }
+
+        function eksekusiResetData() {
+            pemasukan = [];
+            pengeluaran = [];
+            utang = [];
+            localStorage.clear();
+            tutupModalReset();
+            render();
+        }
+
+        function render() {
+            pemasukan.sort((a, b) => new Date(b.tanggal || 0) - new Date(a.tanggal || 0));
+            pengeluaran.sort((a, b) => new Date(b.tanggal || 0) - new Date(a.tanggal || 0));
+            utang.sort((a, b) => new Date(b.tanggal || 0) - new Date(a.tanggal || 0));
+
+            const tbodyMasuk = document.getElementById('tabelPemasukanBody');
+            tbodyMasuk.innerHTML = '';
+            let totalMasukVal = 0;
+            let subMasukCash = 0, subMasukQris = 0, subMasukBri = 0, subMasukDana = 0;
+
+            if (pemasukan.length === 0) {
+                tbodyMasuk.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 text-xs">Belum ada data duit masuk</td></tr>`;
+            } else {
+                pemasukan.forEach(item => {
+                    totalMasukVal += item.jumlah;
+                    const mtd = item.metode || 'Cash';
+                    
+                    if (mtd === 'Cash') subMasukCash += item.jumlah;
+                    else if (mtd === 'QRIS') subMasukQris += item.jumlah;
+                    else if (mtd === 'BRI') subMasukBri += item.jumlah;
+                    else if (mtd === 'DANA') subMasukDana += item.jumlah;
+
+                    tbodyMasuk.innerHTML += `
+                        <tr class="hover:bg-slate-50/85 transition">
+                            <td class="p-3.5 text-xs text-slate-500 font-medium whitespace-nowrap">${formatTanggal(item.tanggal)}</td>
+                            <td class="p-3.5 text-slate-700 font-medium">${item.ket}</td>
+                            <td class="p-3.5">
+                                <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 text-slate-600">${mtd}</span>
+                            </td>
+                            <td class="p-3.5 font-semibold text-sky-600">${formatRupiah(item.jumlah)}</td>
+                            <td class="p-3.5 text-center">
+                                <button onclick="hapusData(${item.id}, 'pemasukan')" class="text-rose-400 hover:text-rose-600 p-1 rounded-lg text-xs font-semibold transition">Hapus</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('totalPemasukan').innerText = formatRupiah(totalMasukVal);
+            document.getElementById('subMasukCash').innerText = formatRupiah(subMasukCash);
+            document.getElementById('subMasukQris').innerText = formatRupiah(subMasukQris);
+            document.getElementById('subMasukBri').innerText = formatRupiah(subMasukBri);
+            document.getElementById('subMasukDana').innerText = formatRupiah(subMasukDana);
+
+            const tbodyKeluar = document.getElementById('tabelPengeluaranBody');
+            tbodyKeluar.innerHTML = '';
+            let totalKeluarVal = 0;
+            let subKeluarCash = 0, subKeluarQris = 0, subKeluarBri = 0, subKeluarDana = 0;
+
+            if (pengeluaran.length === 0) {
+                tbodyKeluar.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 text-xs">Belum ada data duit keluar</td></tr>`;
+            } else {
+                pengeluaran.forEach(item => {
+                    totalKeluarVal += item.jumlah;
+                    const mtd = item.metode || 'Cash';
+
+                    if (mtd === 'Cash') subKeluarCash += item.jumlah;
+                    else if (mtd === 'QRIS') subKeluarQris += item.jumlah;
+                    else if (mtd === 'BRI') subKeluarBri += item.jumlah;
+                    else if (mtd === 'DANA') subKeluarDana += item.jumlah;
+
+                    tbodyKeluar.innerHTML += `
+                        <tr class="hover:bg-slate-50/85 transition">
+                            <td class="p-3.5 text-xs text-slate-500 font-medium whitespace-nowrap">${formatTanggal(item.tanggal)}</td>
+                            <td class="p-3.5 text-slate-700 font-medium">${item.ket}</td>
+                            <td class="p-3.5">
+                                <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 text-slate-600">${mtd}</span>
+                            </td>
+                            <td class="p-3.5 font-semibold text-rose-600">${formatRupiah(item.jumlah)}</td>
+                            <td class="p-3.5 text-center">
+                                <button onclick="hapusData(${item.id}, 'pengeluaran')" class="text-rose-400 hover:text-rose-600 p-1 rounded-lg text-xs font-semibold transition">Hapus</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('totalPengeluaran').innerText = formatRupiah(totalKeluarVal);
+            document.getElementById('subKeluarCash').innerText = formatRupiah(subKeluarCash);
+            document.getElementById('subKeluarQris').innerText = formatRupiah(subKeluarQris);
+            document.getElementById('subKeluarBri').innerText = formatRupiah(subKeluarBri);
+            document.getElementById('subKeluarDana').innerText = formatRupiah(subKeluarDana);
+
+            let saldoBersihVal = totalMasukVal - totalKeluarVal;
+            document.getElementById('saldoBersih').innerText = formatRupiah(saldoBersihVal);
+
+            const tbodyUtang = document.getElementById('tabelUtangBody');
+            tbodyUtang.innerHTML = '';
+            let totalUtangVal = 0;
+            if (utang.length === 0) {
+                tbodyUtang.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 text-xs">Belum ada daftar utang</td></tr>`;
+            } else {
+                utang.forEach(item => {
+                    if (!item.lunas) totalUtangVal += item.jumlah;
+                    
+                    tbodyUtang.innerHTML += `
+                        <tr class="hover:bg-slate-50/85 transition ${item.lunas ? 'opacity-50' : ''}">
+                            <td class="p-3.5 text-xs text-slate-500 font-medium whitespace-nowrap">${formatTanggal(item.tanggal)}</td>
+                            <td class="p-3.5 font-medium ${item.lunas ? 'line-through text-slate-400' : 'text-slate-700'}">${item.nama}</td>
+                            <td class="p-3.5 font-semibold text-amber-600">${formatRupiah(item.jumlah)}</td>
+                            <td class="p-3.5 text-center">
+                                <button onclick="toggleLunas(${item.id})" class="px-3 py-1 text-xs rounded-full font-bold transition shadow-sm ${item.lunas ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' : 'bg-amber-100 text-amber-700 hover:bg-amber-200'}">
+                                    ${item.lunas ? '✓ Lunas' : 'Belum Lunas'}
+                                </button>
+                            </td>
+                            <td class="p-3.5 text-center">
+                                <button onclick="hapusData(${item.id}, 'utang')" class="text-rose-400 hover:text-rose-600 p-1 rounded-lg text-xs font-semibold transition">Hapus</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('totalUtang').innerText = formatRupiah(totalUtangVal);
+        }
+
+        render();
+    </script>
+</body>
+</html>
