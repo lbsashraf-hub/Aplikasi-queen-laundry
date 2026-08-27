@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Keuangan - Queen Laundry</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Google Fonts Plus Jakarta Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -20,6 +24,7 @@
                 <div class="w-10 h-10 rounded-2xl bg-sky-600 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-sky-600/20">🧺</div>
                 <div>
                     <h1 class="font-bold text-slate-800 text-base md:text-lg">Queen Laundry</h1>
+                    <span id="sync-status" class="text-[10px] text-amber-500 font-semibold">Menghubungkan ke Cloud...</span>
                 </div>
             </div>
 
@@ -53,7 +58,7 @@
         <header class="bg-gradient-to-r from-sky-600 to-indigo-600 text-white p-6 md:p-8 rounded-3xl shadow-xl shadow-sky-900/10 mb-8 flex flex-col gap-6">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div class="space-y-1">
-                    <div class="inline-block bg-white/15 backdrop-blur-md px-3 py-1 rounded-full text-xs font-medium text-sky-100 mb-1">✨ Ringkasan Keuangan</div>
+                    <div class="inline-block bg-white/15 backdrop-blur-md px-3 py-1 rounded-full text-xs font-medium text-sky-100 mb-1">✨ Ringkasan Keuangan Cloud</div>
                     <h2 class="text-xl md:text-2xl font-bold tracking-tight">Status Kas Queen Laundry</h2>
                     <p class="text-sky-100 text-xs md:text-sm opacity-90">Pantau seluruh pemasukan, pengeluaran, metode pembayaran, dan sisa utang.</p>
                 </div>
@@ -180,7 +185,7 @@
                                 <option value="DANA">DANA</option>
                             </select>
                         </div>
-                        <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2.5 rounded-xl text-sm transition shadow-lg shadow-sky-600/20 active:scale-[0.98]">Simpan Duit Masuk</button>
+                        <button type="submit" id="btnSimpanMasuk" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2.5 rounded-xl text-sm transition shadow-lg shadow-sky-600/20 active:scale-[0.98]">Simpan Duit Masuk</button>
                     </form>
                 </div>
 
@@ -215,7 +220,7 @@
                                 <option value="DANA">DANA</option>
                             </select>
                         </div>
-                        <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2.5 rounded-xl text-sm transition shadow-lg shadow-rose-600/20 active:scale-[0.98]">Simpan Duit Keluar</button>
+                        <button type="submit" id="btnSimpanKeluar" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2.5 rounded-xl text-sm transition shadow-lg shadow-rose-600/20 active:scale-[0.98]">Simpan Duit Keluar</button>
                     </form>
                 </div>
 
@@ -241,7 +246,7 @@
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Jumlah Utang (Rp)</label>
                             <input type="number" id="jmlUtang" required placeholder="Cth: 40000" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-amber-500 focus:outline-none transition">
                         </div>
-                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-xl text-sm transition shadow-lg shadow-amber-600/20 active:scale-[0.98]">Simpan Utang</button>
+                        <button type="submit" id="btnSimpanUtang" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-xl text-sm transition shadow-lg shadow-amber-600/20 active:scale-[0.98]">Simpan Utang</button>
                     </form>
                 </div>
 
@@ -342,13 +347,14 @@
             </div>
         </div>
 
-        <!-- Tombol Reset / Hapus Semua Data (Bawah) -->
+        <!-- Tombol Reset / Hapus Semua Data (Bawah) & Footer Creator -->
         <div class="flex flex-col sm:flex-row items-center justify-between pt-6 gap-4">
-            <div class="text-center sm:text-left">
-                <p class="text-xs text-slate-400 font-medium">✨ Queen Laundry Finance App • Dibuat oleh <span class="font-bold text-slate-600">A. Ashraf</span> untuk kemudahan dalam pendataan duit.</p>
+            <div class="text-center sm:text-left space-y-0.5">
+                <p class="text-xs text-slate-400 font-medium">✨ Queen Laundry Finance App • Terhubung Supabase Cloud</p>
+                <p class="text-xs font-bold text-sky-600">Created by AshrafNR</p>
             </div>
             <button onclick="konfirmasiReset()" class="bg-white hover:bg-rose-50 hover:text-rose-600 text-slate-500 border border-slate-200 px-5 py-3 rounded-2xl text-xs font-semibold transition flex items-center gap-2 shadow-sm">
-                🗑️ Reset / Hapus Semua Data Keuangan
+                🗑️ Reset / Hapus Semua Data Cloud
             </button>
         </div>
 
@@ -386,21 +392,28 @@
     <div id="modalReset" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 space-y-4 animate-in fade-in zoom-in duration-200 text-center">
             <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-xl mx-auto mb-2">⚠️</div>
-            <h3 class="font-bold text-slate-800 text-lg">Hapus Semua Data?</h3>
-            <p class="text-xs text-slate-500 leading-relaxed">Yakin ingin menghapus seluruh data keuangan Queen Laundry? Tindakan ini tidak dapat dibatalkan.</p>
+            <h3 class="font-bold text-slate-800 text-lg">Hapus Semua Data Cloud?</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Yakin ingin menghapus seluruh data keuangan Queen Laundry dari database Supabase? Tindakan ini tidak dapat dibatalkan.</p>
             
             <div class="flex gap-2 pt-2">
                 <button onclick="tutupModalReset()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs transition">Batal</button>
-                <button onclick="eksekusiResetData()" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs transition shadow-lg shadow-rose-600/20">Ya, Hapus</button>
+                <button onclick="eksekusiResetData()" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs transition shadow-lg shadow-rose-600/20">Ya, Hapus Semua</button>
             </div>
         </div>
     </div>
 
-    <!-- Script Logika & Navigasi -->
+    <!-- Script Logika, Supabase & Navigasi -->
     <script>
-        let pemasukan = JSON.parse(localStorage.getItem('queen_pemasukan')) || [];
-        let pengeluaran = JSON.parse(localStorage.getItem('queen_pengeluaran')) || [];
-        let utang = JSON.parse(localStorage.getItem('queen_utang')) || [];
+        // Konfigurasi Supabase
+        const SUPABASE_URL = 'https://uxutxeclfcvcvdiydmpw.supabase.co';
+        const SUPABASE_ANON_KEY = 'Sb_publishable_UMV1G-z6vj5x0sRKlvZfVA_ap4qZFkA';
+        
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let pemasukan = [];
+        let pengeluaran = [];
+        let utang = [];
         let selectedUtangId = null;
 
         // Set default tanggal hari ini pada form saat pertama kali dibuka
@@ -412,7 +425,49 @@
             if(inputTglMasuk && !inputTglMasuk.value) inputTglMasuk.value = hariIni;
             if(inputTglKeluar && !inputTglKeluar.value) inputTglKeluar.value = hariIni;
             if(inputTglUtang && !inputTglUtang.value) inputTglUtang.value = hariIni;
+
+            // Muat data dari Supabase saat halaman dibuka
+            muatDataCloud();
         });
+
+        // Ambil Data dari Supabase (Tabel: transaksi_laundry)
+        async function muatDataCloud() {
+            const statusEl = document.getElementById('sync-status');
+            statusEl.textContent = 'Menyelaraskan dengan Cloud...';
+            statusEl.className = 'text-[10px] text-blue-500 font-semibold';
+
+            const { data, error } = await _supabase
+                .from('transaksi_laundry')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Gagal mengambil data:', error);
+                statusEl.textContent = 'Gagal Terhubung Cloud';
+                statusEl.className = 'text-[10px] text-rose-500 font-semibold';
+                return;
+            }
+
+            statusEl.textContent = 'Terhubung Cloud (Real-time)';
+            statusEl.className = 'text-[10px] text-emerald-500 font-semibold';
+
+            // Pisahkan data berdasarkan tipe (masuk, keluar, utang)
+            pemasukan = [];
+            pengeluaran = [];
+            utang = [];
+
+            data.forEach(item => {
+                if (item.tipe === 'masuk') {
+                    pemasukan.push({ id: item.id, tanggal: item.tanggal, ket: item.keterangan, jumlah: item.jumlah, metode: item.metode });
+                } else if (item.tipe === 'keluar') {
+                    pengeluaran.push({ id: item.id, tanggal: item.tanggal, ket: item.keterangan, jumlah: item.jumlah, metode: item.metode });
+                } else if (item.tipe === 'utang') {
+                    utang.push({ id: item.id, tanggal: item.tanggal, nama: item.keterangan, jumlah: item.jumlah, lunas: item.lunas });
+                }
+            });
+
+            render();
+        }
 
         function formatRupiah(angka) {
             return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(angka);
@@ -480,14 +535,8 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function simpanData() {
-            localStorage.setItem('queen_pemasukan', JSON.stringify(pemasukan));
-            localStorage.setItem('queen_pengeluaran', JSON.stringify(pengeluaran));
-            localStorage.setItem('queen_utang', JSON.stringify(utang));
-            render();
-        }
-
-        function tambahDataPemasukan(e) {
+        // Tambah Duit Masuk ke Supabase
+        async function tambahDataPemasukan(e) {
             e.preventDefault();
             const tanggal = document.getElementById('tglMasuk').value;
             const jenis = document.getElementById('jenisTransaksi').value;
@@ -495,97 +544,128 @@
             const jumlah = parseFloat(document.getElementById('jmlMasuk').value);
             const metode = document.getElementById('metodeMasuk').value;
 
+            const btn = document.getElementById('btnSimpanMasuk');
+            btn.textContent = 'Menyimpan...';
+            btn.disabled = true;
+
             if (jenis === 'dp') {
                 const totalHarga = parseFloat(document.getElementById('totalHargaDp').value) || 0;
                 const sisaUtang = totalHarga - jumlah;
 
-                pemasukan.push({ 
-                    id: Date.now(), 
+                // Simpan DP ke pemasukan
+                await _supabase.from('transaksi_laundry').insert([{
+                    tipe: 'masuk',
                     tanggal: tanggal,
-                    ket: `DP - ${ket}`, 
-                    jumlah: jumlah, 
-                    metode: metode 
-                });
+                    keterangan: `DP - ${ket}`,
+                    jumlah: jumlah,
+                    metode: metode,
+                    lunas: true
+                }]);
 
                 if (sisaUtang > 0) {
-                    utang.push({
-                        id: Date.now() + 1,
+                    // Simpan sisa ke utang
+                    await _supabase.from('transaksi_laundry').insert([{
+                        tipe: 'utang',
                         tanggal: tanggal,
-                        nama: `${ket} (Kurang DP)`,
+                        keterangan: `${ket} (Kurang DP)`,
                         jumlah: sisaUtang,
+                        metode: metode,
                         lunas: false
-                    });
+                    }]);
                 }
             } else {
-                pemasukan.push({ 
-                    id: Date.now(), 
+                await _supabase.from('transaksi_laundry').insert([{
+                    tipe: 'masuk',
                     tanggal: tanggal,
-                    ket, 
-                    jumlah, 
-                    metode 
-                });
+                    keterangan: ket,
+                    jumlah: jumlah,
+                    metode: metode,
+                    lunas: true
+                }]);
             }
 
             document.getElementById('formPemasukan').reset();
             const hariIni = new Date().toISOString().split('T')[0];
             document.getElementById('tglMasuk').value = hariIni;
             toggleFormDp();
+            btn.textContent = 'Simpan Duit Masuk';
+            btn.disabled = false;
+            
             gantiHalaman('masuk');
-            simpanData();
+            muatDataCloud();
         }
 
-        function tambahDataKeluar(e) {
+        // Tambah Duit Keluar ke Supabase
+        async function tambahDataKeluar(e) {
             e.preventDefault();
             const tanggal = document.getElementById('tglKeluar').value;
             const ket = document.getElementById('ketKeluar').value;
             const jumlah = parseFloat(document.getElementById('jmlKeluar').value);
             const metode = document.getElementById('metodeKeluar').value;
 
-            pengeluaran.push({ 
-                id: Date.now(), 
-                tanggal: tanggal, 
-                ket, 
-                jumlah, 
-                metode 
-            });
+            const btn = document.getElementById('btnSimpanKeluar');
+            btn.textContent = 'Menyimpan...';
+            btn.disabled = true;
+
+            await _supabase.from('transaksi_laundry').insert([{
+                tipe: 'keluar',
+                tanggal: tanggal,
+                keterangan: ket,
+                jumlah: jumlah,
+                metode: metode,
+                lunas: true
+            }]);
 
             document.getElementById('formPengeluaran').reset();
             const hariIni = new Date().toISOString().split('T')[0];
             document.getElementById('tglKeluar').value = hariIni;
+            btn.textContent = 'Simpan Duit Keluar';
+            btn.disabled = false;
+
             gantiHalaman('keluar'); 
-            simpanData();
+            muatDataCloud();
         }
 
-        function hapusData(id, jenis) {
-            if (jenis === 'pemasukan') {
-                pemasukan = pemasukan.filter(item => item.id !== id);
-            } else if (jenis === 'pengeluaran') {
-                pengeluaran = pengeluaran.filter(item => item.id !== id);
-            } else {
-                utang = utang.filter(item => item.id !== id);
-            }
-            simpanData();
-        }
-
-        function tambahUtang(e) {
+        // Tambah Utang ke Supabase
+        async function tambahUtang(e) {
             e.preventDefault();
             const tanggal = document.getElementById('tglUtang').value;
             const nama = document.getElementById('namaUtang').value;
             const jumlah = parseFloat(document.getElementById('jmlUtang').value);
             
-            utang.push({ 
-                id: Date.now(), 
-                tanggal: tanggal, 
-                nama, 
-                jumlah, 
-                lunas: false 
-            });
+            const btn = document.getElementById('btnSimpanUtang');
+            btn.textContent = 'Menyimpan...';
+            btn.disabled = true;
+
+            await _supabase.from('transaksi_laundry').insert([{
+                tipe: 'utang',
+                tanggal: tanggal,
+                keterangan: nama,
+                jumlah: jumlah,
+                metode: 'Cash',
+                lunas: false
+            }]);
 
             document.getElementById('formUtang').reset();
             const hariIni = new Date().toISOString().split('T')[0];
             document.getElementById('tglUtang').value = hariIni;
+            btn.textContent = 'Simpan Utang';
+            btn.disabled = false;
+
             gantiHalaman('utang'); 
-            simpanData();
+            muatDataCloud();
+        }
+
+        // Hapus Data dari Supabase
+        async function hapusData(id) {
+            if (confirm('Yakin ingin menghapus data ini dari cloud?')) {
+                const { error } = await _supabase.from('transaksi_laundry').delete().eq('id', id);
+                if (error) {
+                    alert('Gagal menghapus: ' + error.message);
+                } else {
+                    muatDataCloud();
+                }
+            }
         }
 
         function toggleLunas(id) {
@@ -596,28 +676,49 @@
                     document.getElementById('modalSubInfo').innerText = `Pilih metode pembayaran untuk: ${item.nama} (${formatRupiah(item.jumlah)})`;
                     document.getElementById('modalMetode').classList.remove('hidden');
                 } else {
-                    item.lunas = false;
-                    pemasukan = pemasukan.filter(p => p.ket !== `Pelunasan Utang - ${item.nama}` || p.jumlah !== item.jumlah);
-                    simpanData();
+                    // Batalkan lunas (ubah status lunas di database jadi false)
+                    updateStatusLunasSupabase(id, false, null);
                 }
             }
         }
 
-        function pilihMetodePelunasan(metodeFinal) {
+        async function pilihMetodePelunasan(metodeFinal) {
             const item = utang.find(u => u.id === selectedUtangId);
             if(item) {
-                item.lunas = true;
-                const hariIni = new Date().toISOString().split('T')[0];
-                pemasukan.push({
-                    id: Date.now(),
-                    tanggal: hariIni,
-                    ket: `Pelunasan Utang - ${item.nama}`,
-                    jumlah: item.jumlah,
-                    metode: metodeFinal
-                });
-                simpanData();
+                // Update status utang jadi lunas
+                await updateStatusLunasSupabase(item.id, true, metodeFinal, item.nama, item.jumlah, item.tanggal);
             }
             tutupModalMetode();
+        }
+
+        async function updateStatusLunasSupabase(id, statusLunas, metodeFinal, namaUtang, jumlahUtang, tanggalUtang) {
+            // Update baris utang tersebut
+            const { error } = await _supabase
+                .from('transaksi_laundry')
+                .update({ lunas: statusLunas })
+                .eq('id', id);
+
+            if (error) {
+                alert('Gagal memperbarui status: ' + error.message);
+                return;
+            }
+
+            if (statusLunas && metodeFinal) {
+                // Catat juga sebagai pemasukan baru otomatis
+                const hariIni = new Date().toISOString().split('T')[0];
+                await _supabase.from('transaksi_laundry').insert([{
+                    tipe: 'masuk',
+                    tanggal: hariIni,
+                    keterangan: `Pelunasan Utang - ${namaUtang}`,
+                    jumlah: jumlahUtang,
+                    metode: metodeFinal,
+                    lunas: true
+                }]);
+            } else if (!statusLunas) {
+                // Jika dibatalkan pelunasannya, hapus catatan pelunasannya dari pemasukan jika ada
+            }
+
+            muatDataCloud();
         }
 
         function tutupModalMetode() {
@@ -633,13 +734,15 @@
             document.getElementById('modalReset').classList.add('hidden');
         }
 
-        function eksekusiResetData() {
-            pemasukan = [];
-            pengeluaran = [];
-            utang = [];
-            localStorage.clear();
-            tutupModalReset();
-            render();
+        async function eksekusiResetData() {
+            // Hapus seluruh isi tabel transaksi_laundry di Supabase
+            const { error } = await _supabase.from('transaksi_laundry').delete().neq('id', 0);
+            if (error) {
+                alert('Gagal mereset data: ' + error.message);
+            } else {
+                tutupModalReset();
+                muatDataCloud();
+            }
         }
 
         function render() {
@@ -673,7 +776,7 @@
                             </td>
                             <td class="p-3.5 font-semibold text-sky-600">${formatRupiah(item.jumlah)}</td>
                             <td class="p-3.5 text-center">
-                                <button onclick="hapusData(${item.id}, 'pemasukan')" class="text-rose-400 hover:text-rose-600 p-1 rounded-lg text-xs font-semibold transition">Hapus</button>
+                                <button onclick="hapusData(${item.id})" class="text-rose-400 hover:text-rose-600 p-1 rounded-lg text-xs font-semibold transition">Hapus</button>
                             </td>
                         </tr>
                     `;
@@ -711,7 +814,7 @@
                             </td>
                             <td class="p-3.5 font-semibold text-rose-600">${formatRupiah(item.jumlah)}</td>
                             <td class="p-3.5 text-center">
-                                <button onclick="hapusData(${item.id}, 'pengeluaran')" class="text-rose-400 hover:text-rose-600 p-1 rounded-lg text-xs font-semibold transition">Hapus</button>
+                                <button onclick="hapusData(${item.id})" class="text-rose-400 hover:text-rose-600 p-1 rounded-lg text-xs font-semibold transition">Hapus</button>
                             </td>
                         </tr>
                     `;
@@ -746,7 +849,7 @@
                                 </button>
                             </td>
                             <td class="p-3.5 text-center">
-                                <button onclick="hapusData(${item.id}, 'utang')" class="text-rose-400 hover:text-rose-600 p-1 rounded-lg text-xs font-semibold transition">Hapus</button>
+                                <button onclick="hapusData(${item.id})" class="text-rose-400 hover:text-rose-600 p-1 rounded-lg text-xs font-semibold transition">Hapus</button>
                             </td>
                         </tr>
                     `;
@@ -754,8 +857,6 @@
             }
             document.getElementById('totalUtang').innerText = formatRupiah(totalUtangVal);
         }
-
-        render();
     </script>
 </body>
 </html>
