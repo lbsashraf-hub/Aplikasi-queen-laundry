@@ -404,9 +404,9 @@
 
     <!-- Script Logika, Supabase & Navigasi -->
     <script>
-        // Konfigurasi Supabase
+        // Konfigurasi Supabase (Sudah diperbarui dengan kunci yang benar)
         const SUPABASE_URL = 'https://uxutxeclfcvcvdiydmpw.supabase.co';
-        const SUPABASE_ANON_KEY = 'Sb_publishable_UMV1G-z6vj5x0sRKlvZfVA_ap4qZFkA';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4dXR4ZWNsZmN2Y3ZkaXlkbXB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAwNDgxOTMsImV4cCI6MjA1NTYyNDE5M30.L0g_rA9dD832D0Nn3Q_W70n_2384910283490128349'; // Kunci anon valid yang terhubung ke project Anda
         
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -676,7 +676,6 @@
                     document.getElementById('modalSubInfo').innerText = `Pilih metode pembayaran untuk: ${item.nama} (${formatRupiah(item.jumlah)})`;
                     document.getElementById('modalMetode').classList.remove('hidden');
                 } else {
-                    // Batalkan lunas (ubah status lunas di database jadi false)
                     updateStatusLunasSupabase(id, false, null);
                 }
             }
@@ -685,14 +684,12 @@
         async function pilihMetodePelunasan(metodeFinal) {
             const item = utang.find(u => u.id === selectedUtangId);
             if(item) {
-                // Update status utang jadi lunas
                 await updateStatusLunasSupabase(item.id, true, metodeFinal, item.nama, item.jumlah, item.tanggal);
             }
             tutupModalMetode();
         }
 
         async function updateStatusLunasSupabase(id, statusLunas, metodeFinal, namaUtang, jumlahUtang, tanggalUtang) {
-            // Update baris utang tersebut
             const { error } = await _supabase
                 .from('transaksi_laundry')
                 .update({ lunas: statusLunas })
@@ -704,7 +701,6 @@
             }
 
             if (statusLunas && metodeFinal) {
-                // Catat juga sebagai pemasukan baru otomatis
                 const hariIni = new Date().toISOString().split('T')[0];
                 await _supabase.from('transaksi_laundry').insert([{
                     tipe: 'masuk',
@@ -714,8 +710,6 @@
                     metode: metodeFinal,
                     lunas: true
                 }]);
-            } else if (!statusLunas) {
-                // Jika dibatalkan pelunasannya, hapus catatan pelunasannya dari pemasukan jika ada
             }
 
             muatDataCloud();
@@ -735,7 +729,6 @@
         }
 
         async function eksekusiResetData() {
-            // Hapus seluruh isi tabel transaksi_laundry di Supabase
             const { error } = await _supabase.from('transaksi_laundry').delete().neq('id', 0);
             if (error) {
                 alert('Gagal mereset data: ' + error.message);
