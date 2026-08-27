@@ -404,10 +404,10 @@
 
     <!-- Script Logika, Supabase & Navigasi -->
     <script>
-        // Konfigurasi Supabase (Sudah diperbarui dengan kunci yang benar)
+        // Konfigurasi Supabase
         const SUPABASE_URL = 'https://uxutxeclfcvcvdiydmpw.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4dXR4ZWNsZmN2Y3ZkaXlkbXB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAwNDgxOTMsImV4cCI6MjA1NTYyNDE5M30.L0g_rA9dD832D0Nn3Q_W70n_2384910283490128349'; // Kunci anon valid yang terhubung ke project Anda
-        
+        const SUPABASE_ANON_KEY = 'sb_publishable_UMV1G-z6vj5x0sRKlvZfVA_ap4qZFkA';
+
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -416,7 +416,6 @@
         let utang = [];
         let selectedUtangId = null;
 
-        // Set default tanggal hari ini pada form saat pertama kali dibuka
         document.addEventListener("DOMContentLoaded", () => {
             const hariIni = new Date().toISOString().split('T')[0];
             const inputTglMasuk = document.getElementById('tglMasuk');
@@ -426,11 +425,9 @@
             if(inputTglKeluar && !inputTglKeluar.value) inputTglKeluar.value = hariIni;
             if(inputTglUtang && !inputTglUtang.value) inputTglUtang.value = hariIni;
 
-            // Muat data dari Supabase saat halaman dibuka
             muatDataCloud();
         });
 
-        // Ambil Data dari Supabase (Tabel: transaksi_laundry)
         async function muatDataCloud() {
             const statusEl = document.getElementById('sync-status');
             statusEl.textContent = 'Menyelaraskan dengan Cloud...';
@@ -451,7 +448,6 @@
             statusEl.textContent = 'Terhubung Cloud (Real-time)';
             statusEl.className = 'text-[10px] text-emerald-500 font-semibold';
 
-            // Pisahkan data berdasarkan tipe (masuk, keluar, utang)
             pemasukan = [];
             pengeluaran = [];
             utang = [];
@@ -535,7 +531,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Tambah Duit Masuk ke Supabase
         async function tambahDataPemasukan(e) {
             e.preventDefault();
             const tanggal = document.getElementById('tglMasuk').value;
@@ -552,7 +547,6 @@
                 const totalHarga = parseFloat(document.getElementById('totalHargaDp').value) || 0;
                 const sisaUtang = totalHarga - jumlah;
 
-                // Simpan DP ke pemasukan
                 await _supabase.from('transaksi_laundry').insert([{
                     tipe: 'masuk',
                     tanggal: tanggal,
@@ -563,7 +557,6 @@
                 }]);
 
                 if (sisaUtang > 0) {
-                    // Simpan sisa ke utang
                     await _supabase.from('transaksi_laundry').insert([{
                         tipe: 'utang',
                         tanggal: tanggal,
@@ -595,7 +588,6 @@
             muatDataCloud();
         }
 
-        // Tambah Duit Keluar ke Supabase
         async function tambahDataKeluar(e) {
             e.preventDefault();
             const tanggal = document.getElementById('tglKeluar').value;
@@ -626,7 +618,6 @@
             muatDataCloud();
         }
 
-        // Tambah Utang ke Supabase
         async function tambahUtang(e) {
             e.preventDefault();
             const tanggal = document.getElementById('tglUtang').value;
@@ -656,7 +647,6 @@
             muatDataCloud();
         }
 
-        // Hapus Data dari Supabase
         async function hapusData(id) {
             if (confirm('Yakin ingin menghapus data ini dari cloud?')) {
                 const { error } = await _supabase.from('transaksi_laundry').delete().eq('id', id);
