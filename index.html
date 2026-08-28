@@ -25,7 +25,28 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased min-h-screen pb-10 transition-colors duration-300">
 
-    <div class="max-w-6xl mx-auto p-4 md:p-8">
+    <!-- ================= HALAMAN LOGIN SANDI ================= -->
+    <div id="pageLogin" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-sm w-full shadow-2xl border border-slate-100 dark:border-slate-800 space-y-6 text-center animate-in fade-in zoom-in duration-300">
+            <div class="w-16 h-16 rounded-3xl bg-sky-600 text-white flex items-center justify-center font-bold text-2xl mx-auto shadow-lg shadow-sky-600/30">🧺</div>
+            <div class="space-y-1">
+                <h2 class="font-bold text-slate-800 dark:text-white text-xl">Queen Laundry</h2>
+                <p class="text-xs text-slate-400">Masukkan sandi untuk membuka laporan keuangan.</p>
+            </div>
+            
+            <form onsubmit="prosesLogin(event)" class="space-y-4">
+                <div>
+                    <input type="password" id="inputSandi" required placeholder="Masukkan Sandi (Cth: 1234)" class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-center text-lg tracking-widest text-slate-800 dark:text-white focus:bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none transition">
+                    <p id="sandiError" class="text-rose-500 text-xs mt-2 hidden">Sandi salah! Coba ingat-ingat lagi, jangan ingat mantan.</p>
+                </div>
+                <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 rounded-2xl text-sm transition shadow-lg shadow-sky-600/20 active:scale-[0.98]">Masuk Aplikasi</button>
+            </form>
+            <p class="text-[10px] text-slate-400">Sandi default bawaan: <span class="font-bold text-slate-600 dark:text-slate-300">1234</span></p>
+        </div>
+    </div>
+
+    <!-- ================= KONTEN UTAMA APLIKASI ================= -->
+    <div id="appContainer" class="max-w-6xl mx-auto p-4 md:p-8 hidden">
         
         <!-- Navbar Atas, Dark Mode & Burger Menu -->
         <nav class="bg-white dark:bg-slate-900 px-6 py-4 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 mb-6 flex justify-between items-center transition-colors duration-300">
@@ -44,6 +65,9 @@
             <div class="flex items-center gap-2">
                 <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition focus:outline-none" title="Ubah Tema Terang/Gelap">
                     <span id="iconTheme" class="text-base">🌙</span>
+                </button>
+                <button onclick="logoutApp()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-rose-500 hover:bg-rose-50 dark:hover:bg-slate-700 transition focus:outline-none" title="Kunci / Keluar Sandi">
+                    <span class="text-base">🔒</span>
                 </button>
                 <div class="md:hidden">
                     <button onclick="toggleMobileMenu()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition focus:outline-none">
@@ -482,6 +506,9 @@
         const SUPABASE_URL = 'https://uxutxeclfcvcvdiydmpw.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_UMV1G-z6vj5x0sRKlvZfVA_ap4qZFkA';
 
+        // 🔐 SANDI MASUK APLIKASI (Bisa Anda ganti sesuka hati di sini)
+        const SANDI_RAHASIA = 'kasmoney1234';
+
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -493,6 +520,11 @@
         let memoTimeout = null;
 
         document.addEventListener("DOMContentLoaded", () => {
+            // Cek apakah sudah login sebelumnya di sesi browser ini
+            if (sessionStorage.getItem('queen_laundry_auth') === 'true') {
+                bukaAplikasi();
+            }
+
             const hariIni = new Date().toISOString().split('T')[0];
             const inputTglMasuk = document.getElementById('tglMasuk');
             const inputTglKeluar = document.getElementById('tglKeluar');
@@ -500,10 +532,37 @@
             if(inputTglMasuk && !inputTglMasuk.value) inputTglMasuk.value = hariIni;
             if(inputTglKeluar && !inputTglKeluar.value) inputTglKeluar.value = hariIni;
             if(inputTglUtang && !inputTglUtang.value) inputTglUtang.value = hariIni;
+        });
 
+        function prosesLogin(e) {
+            e.preventDefault();
+            const sandiInput = document.getElementById('inputSandi').value;
+            const errorEl = document.getElementById('sandiError');
+
+            if (sandiInput === SANDI_RAHASIA) {
+                sessionStorage.setItem('queen_laundry_auth', 'true');
+                bukaAplikasi();
+            } else {
+                errorEl.classList.remove('hidden');
+                document.getElementById('inputSandi').value = '';
+                document.getElementById('inputSandi').focus();
+            }
+        }
+
+        function bukaAplikasi() {
+            document.getElementById('pageLogin').classList.add('hidden');
+            document.getElementById('appContainer').classList.remove('hidden');
             muatDataCloud();
             muatMemoCloud();
-        });
+        }
+
+        function logoutApp() {
+            sessionStorage.removeItem('queen_laundry_auth');
+            document.getElementById('appContainer').classList.add('hidden');
+            document.getElementById('pageLogin').classList.remove('hidden');
+            document.getElementById('inputSandi').value = '';
+            document.getElementById('sandiError').classList.add('hidden');
+        }
 
         function toggleDarkMode() {
             const htmlEl = document.documentElement;
