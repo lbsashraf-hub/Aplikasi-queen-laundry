@@ -41,7 +41,7 @@
                 </div>
                 <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 rounded-2xl text-sm transition shadow-lg shadow-sky-600/20 active:scale-[0.98]">Masuk Aplikasi</button>
             </form>
-            <p class="text-[10px] text-slate-400">Sandi default bawaan: <span class="font-bold text-slate-600 dark:text-slate-300">1234</span></p>
+            <p class="text-[10px] text-slate-400">Sandi default bawaan: <span class="font-bold text-slate-600 dark:text-slate-300">Password Bisa Hubungi A ashraf</span></p>
         </div>
     </div>
 
@@ -336,7 +336,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <div>
                         <h3 class="text-xl font-bold text-slate-800 dark:text-white">📥 Halaman Riwayat Duit Masuk</h3>
-                        <p class="text-xs text-slate-400">Seluruh catatan pemasukan jasa laundry beserta metodenya.</p>
+                        <p class="text-xs text-slate-400">Seluruh catatan pemasukan jasa laundry beserta jam & metodenya (Tanggal & jam bisa diubah langsung pada tabel).</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <button onclick="gantiHalaman('dashboard')" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold transition">← Kembali</button>
@@ -356,7 +356,7 @@
                     <table class="w-full text-left text-sm">
                         <thead class="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 sticky top-0 uppercase text-[10px] tracking-wider font-bold">
                             <tr>
-                                <th class="p-3.5 rounded-l-xl">Tanggal</th>
+                                <th class="p-3.5 rounded-l-xl">Tanggal & Jam</th>
                                 <th class="p-3.5">Keterangan</th>
                                 <th class="p-3.5">Metode</th>
                                 <th class="p-3.5">Jumlah</th>
@@ -375,7 +375,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <div>
                         <h3 class="text-xl font-bold text-slate-800 dark:text-white">📤 Halaman Riwayat Duit Keluar</h3>
-                        <p class="text-xs text-slate-400">Seluruh catatan pengeluaran operasional beserta sumber dananya.</p>
+                        <p class="text-xs text-slate-400">Seluruh catatan pengeluaran operasional beserta sumber dananya (Tanggal & jam bisa diubah langsung pada tabel).</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <button onclick="gantiHalaman('dashboard')" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold transition">← Kembali</button>
@@ -395,7 +395,7 @@
                     <table class="w-full text-left text-sm">
                         <thead class="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 sticky top-0 uppercase text-[10px] tracking-wider font-bold">
                             <tr>
-                                <th class="p-3.5 rounded-l-xl">Tanggal</th>
+                                <th class="p-3.5 rounded-l-xl">Tanggal & Jam</th>
                                 <th class="p-3.5">Keterangan</th>
                                 <th class="p-3.5">Sumber Dana</th>
                                 <th class="p-3.5">Jumlah</th>
@@ -414,7 +414,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <div>
                         <h3 class="text-xl font-bold text-slate-800 dark:text-white">📝 Halaman Daftar Utang Pelanggan</h3>
-                        <p class="text-xs text-slate-400">*Utang yang berumur lebih dari 7 hari otomatis mendeteksi status "Jatuh Tempo".</p>
+                        <p class="text-xs text-slate-400">*Utang yang berumur lebih dari 7 hari otomatis mendeteksi status "Jatuh Tempo" (Tanggal & jam bisa diubah langsung pada tabel).</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <button onclick="gantiHalaman('dashboard')" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold transition">← Kembali</button>
@@ -434,7 +434,7 @@
                     <table class="w-full text-left text-sm">
                         <thead class="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 sticky top-0 uppercase text-[10px] tracking-wider font-bold">
                             <tr>
-                                <th class="p-3.5 rounded-l-xl">Tanggal</th>
+                                <th class="p-3.5 rounded-l-xl">Tanggal & Jam</th>
                                 <th class="p-3.5">Nama Pelanggan</th>
                                 <th class="p-3.5">Jumlah Utang</th>
                                 <th class="p-3.5 text-center">Status</th>
@@ -506,7 +506,7 @@
         const SUPABASE_URL = 'https://uxutxeclfcvcvdiydmpw.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_UMV1G-z6vj5x0sRKlvZfVA_ap4qZFkA';
 
-        // 🔐 SANDI MASUK APLIKASI (Bisa Anda ganti sesuka hati di sini)
+        // 🔐 SANDI MASUK APLIKASI
         const SANDI_RAHASIA = 'kasmoney1234';
 
         const { createClient } = supabase;
@@ -520,7 +520,6 @@
         let memoTimeout = null;
 
         document.addEventListener("DOMContentLoaded", () => {
-            // Cek apakah sudah login sebelumnya di sesi browser ini
             if (sessionStorage.getItem('queen_laundry_auth') === 'true') {
                 bukaAplikasi();
             }
@@ -604,12 +603,20 @@
             utang = [];
 
             data.forEach(item => {
+                let jamFormat = item.jam;
+                if (!jamFormat && item.created_at) {
+                    const d = new Date(item.created_at);
+                    jamFormat = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+                } else if (!jamFormat) {
+                    jamFormat = '--:--';
+                }
+
                 if (item.tipe === 'masuk') {
-                    pemasukan.push({ id: item.id, tanggal: item.tanggal, ket: item.keterangan, jumlah: item.jumlah, metode: item.metode });
+                    pemasukan.push({ id: item.id, tanggal: item.tanggal, jam: jamFormat, ket: item.keterangan, jumlah: item.jumlah, metode: item.metode });
                 } else if (item.tipe === 'keluar') {
-                    pengeluaran.push({ id: item.id, tanggal: item.tanggal, ket: item.keterangan, jumlah: item.jumlah, metode: item.metode });
+                    pengeluaran.push({ id: item.id, tanggal: item.tanggal, jam: jamFormat, ket: item.keterangan, jumlah: item.jumlah, metode: item.metode });
                 } else if (item.tipe === 'utang') {
-                    utang.push({ id: item.id, tanggal: item.tanggal, nama: item.keterangan, jumlah: item.jumlah, lunas: item.lunas });
+                    utang.push({ id: item.id, tanggal: item.tanggal, jam: jamFormat, nama: item.keterangan, jumlah: item.jumlah, lunas: item.lunas });
                 }
             });
 
@@ -663,6 +670,36 @@
             const bulan = bulanIndo[parseInt(bagian[1])] || bagian[1];
             const hari = bagian[2];
             return `${hari} ${bulan} ${tahun}`;
+        }
+
+        // 🔄 Fungsi untuk Mengubah Tanggal Langsung dari Tabel Tanpa Hapus Data
+        async function ubahTanggalData(id, tanggalBaru) {
+            if (!tanggalBaru) return;
+            const { error } = await _supabase
+                .from('transaksi_laundry')
+                .update({ tanggal: tanggalBaru })
+                .eq('id', id);
+
+            if (error) {
+                alert('Gagal mengubah tanggal: ' + error.message);
+            } else {
+                muatDataCloud();
+            }
+        }
+
+        // 🔄 Fungsi untuk Mengubah Jam Langsung dari Tabel
+        async function ubahJamData(id, jamBaru) {
+            if (!jamBaru) return;
+            const { error } = await _supabase
+                .from('transaksi_laundry')
+                .update({ jam: jamBaru })
+                .eq('id', id);
+
+            if (error) {
+                alert('Gagal mengubah jam: ' + error.message);
+            } else {
+                muatDataCloud();
+            }
         }
 
         function toggleMobileMenu() {
@@ -724,6 +761,9 @@
             const jumlah = parseFloat(document.getElementById('jmlMasuk').value);
             const metode = document.getElementById('metodeMasuk').value;
 
+            const sekarang = new Date();
+            const jamSekarang = String(sekarang.getHours()).padStart(2, '0') + ':' + String(sekarang.getMinutes()).padStart(2, '0');
+
             const btn = document.getElementById('btnSimpanMasuk');
             btn.textContent = 'Menyimpan...';
             btn.disabled = true;
@@ -735,6 +775,7 @@
                 await _supabase.from('transaksi_laundry').insert([{
                     tipe: 'masuk',
                     tanggal: tanggal,
+                    jam: jamSekarang,
                     keterangan: `DP - ${ket}`,
                     jumlah: jumlah,
                     metode: metode,
@@ -745,6 +786,7 @@
                     await _supabase.from('transaksi_laundry').insert([{
                         tipe: 'utang',
                         tanggal: tanggal,
+                        jam: jamSekarang,
                         keterangan: `${ket} (Kurang DP)`,
                         jumlah: sisaUtang,
                         metode: metode,
@@ -755,6 +797,7 @@
                 await _supabase.from('transaksi_laundry').insert([{
                     tipe: 'masuk',
                     tanggal: tanggal,
+                    jam: jamSekarang,
                     keterangan: ket,
                     jumlah: jumlah,
                     metode: metode,
@@ -780,6 +823,9 @@
             const jumlah = parseFloat(document.getElementById('jmlKeluar').value);
             const metode = document.getElementById('metodeKeluar').value;
 
+            const sekarang = new Date();
+            const jamSekarang = String(sekarang.getHours()).padStart(2, '0') + ':' + String(sekarang.getMinutes()).padStart(2, '0');
+
             const btn = document.getElementById('btnSimpanKeluar');
             btn.textContent = 'Menyimpan...';
             btn.disabled = true;
@@ -787,6 +833,7 @@
             await _supabase.from('transaksi_laundry').insert([{
                 tipe: 'keluar',
                 tanggal: tanggal,
+                jam: jamSekarang,
                 keterangan: ket,
                 jumlah: jumlah,
                 metode: metode,
@@ -809,6 +856,9 @@
             const nama = document.getElementById('namaUtang').value;
             const jumlah = parseFloat(document.getElementById('jmlUtang').value);
             
+            const sekarang = new Date();
+            const jamSekarang = String(sekarang.getHours()).padStart(2, '0') + ':' + String(sekarang.getMinutes()).padStart(2, '0');
+
             const btn = document.getElementById('btnSimpanUtang');
             btn.textContent = 'Menyimpan...';
             btn.disabled = true;
@@ -816,6 +866,7 @@
             await _supabase.from('transaksi_laundry').insert([{
                 tipe: 'utang',
                 tanggal: tanggal,
+                jam: jamSekarang,
                 keterangan: nama,
                 jumlah: jumlah,
                 metode: 'Cash',
@@ -883,9 +934,13 @@
 
             if (statusLunas && metodeFinal) {
                 const hariIni = new Date().toISOString().split('T')[0];
+                const sekarang = new Date();
+                const jamSekarang = String(sekarang.getHours()).padStart(2, '0') + ':' + String(sekarang.getMinutes()).padStart(2, '0');
+
                 await _supabase.from('transaksi_laundry').insert([{
                     tipe: 'masuk',
                     tanggal: hariIni,
+                    jam: jamSekarang,
                     keterangan: `Pelunasan Utang - ${namaUtang}`,
                     jumlah: jumlahUtang,
                     metode: metodeFinal,
@@ -1014,9 +1069,19 @@
             } else {
                 filteredMasuk.forEach(item => {
                     const mtd = item.metode || 'Cash';
+                    const jamTampil = item.jam || '--:--';
                     tbodyMasuk.innerHTML += `
                         <tr class="hover:bg-slate-50/85 dark:hover:bg-slate-800/50 transition">
-                            <td class="p-3.5 text-xs text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">${formatTanggal(item.tanggal)}</td>
+                            <td class="p-3.5 whitespace-nowrap">
+                                <div class="flex flex-col gap-1.5">
+                                    <input type="date" value="${item.tanggal}" 
+                                        onchange="ubahTanggalData(${item.id}, this.value)" 
+                                        class="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-sky-500">
+                                    <input type="time" value="${jamTampil}" 
+                                        onchange="ubahJamData(${item.id}, this.value)" 
+                                        class="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-sky-500">
+                                </div>
+                            </td>
                             <td class="p-3.5 text-slate-700 dark:text-slate-200 font-medium">${item.ket}</td>
                             <td class="p-3.5">
                                 <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${mtd}</span>
@@ -1054,9 +1119,19 @@
             } else {
                 filteredKeluar.forEach(item => {
                     const mtd = item.metode || 'Cash';
+                    const jamTampil = item.jam || '--:--';
                     tbodyKeluar.innerHTML += `
                         <tr class="hover:bg-slate-50/85 dark:hover:bg-slate-800/50 transition">
-                            <td class="p-3.5 text-xs text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">${formatTanggal(item.tanggal)}</td>
+                            <td class="p-3.5 whitespace-nowrap">
+                                <div class="flex flex-col gap-1.5">
+                                    <input type="date" value="${item.tanggal}" 
+                                        onchange="ubahTanggalData(${item.id}, this.value)" 
+                                        class="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-rose-500">
+                                    <input type="time" value="${jamTampil}" 
+                                        onchange="ubahJamData(${item.id}, this.value)" 
+                                        class="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-rose-500">
+                                </div>
+                            </td>
                             <td class="p-3.5 text-slate-700 dark:text-slate-200 font-medium">${item.ket}</td>
                             <td class="p-3.5">
                                 <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${mtd}</span>
@@ -1115,9 +1190,19 @@
                         }
                     }
 
+                    const jamTampil = item.jam || '--:--';
                     tbodyUtang.innerHTML += `
                         <tr class="hover:bg-slate-50/85 dark:hover:bg-slate-800/50 transition ${item.lunas ? 'opacity-50' : ''}">
-                            <td class="p-3.5 text-xs text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">${formatTanggal(item.tanggal)}</td>
+                            <td class="p-3.5 whitespace-nowrap">
+                                <div class="flex flex-col gap-1.5">
+                                    <input type="date" value="${item.tanggal}" 
+                                        onchange="ubahTanggalData(${item.id}, this.value)" 
+                                        class="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500">
+                                    <input type="time" value="${jamTampil}" 
+                                        onchange="ubahJamData(${item.id}, this.value)" 
+                                        class="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500">
+                                </div>
+                            </td>
                             <td class="p-3.5 font-medium ${item.lunas ? 'line-through text-slate-400' : 'text-slate-700 dark:text-slate-200'}">
                                 ${item.nama}
                                 ${isJatuhTempo ? '<span class="ml-2 inline-block px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-100 text-rose-600 animate-pulse">⚠️ Jatuh Tempo</span>' : ''}
