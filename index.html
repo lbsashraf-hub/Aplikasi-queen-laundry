@@ -1189,7 +1189,6 @@
             document.getElementById('totalPengeluaran').innerText = formatRupiah(totalKeluarVal);
 
             // TABEL TRANSFER SALDO
-            let subTransferCash = 0, subTransferQris = 0, subTransferBri = 0, subTransferDana = 0;
             const tbodyTransfer = document.getElementById('tabelTransferBody');
             if(tbodyTransfer) {
                 tbodyTransfer.innerHTML = '';
@@ -1217,74 +1216,93 @@
                 }
             }
 
-            transfer.forEach(item => {
-                if (item.dari === 'Cash') subTransferCash -= item.jumlah;
-                else if (item.dari === 'QRIS') subTransferQris -= item.jumlah;
-                else if (item.dari === 'BRI') subTransferBri -= item.jumlah;
-                else if (item.dari === 'DANA') subTransferDana -= item.jumlah;
+            // HITUNG PERGERAKAN SALDO BERDASARKAN METODE (MASUK - KELUAR ± TRANSFER)
+            let mCash = subMasukCash - subKeluarCash;
+            let mQris = subMasukQris - subKeluarQris;
+            let mBri = subMasukBri - subKeluarBri;
+            let mDana = subMasukDana - subKeluarDana;
 
-                if (item.tujuan === 'Cash') subTransferCash += item.jumlah;
-                else if (item.tujuan === 'QRIS') subTransferQris += item.jumlah;
-                else if (item.tujuan === 'BRI') subTransferBri += item.jumlah;
-                else if (item.tujuan === 'DANA') subTransferDana += item.jumlah;
+            transfer.forEach(t => {
+                const jml = t.jumlah;
+                const dari = t.dari;
+                const tujuan = t.tujuan;
+
+                if(dari === 'Cash') mCash -= jml;
+                if(dari === 'QRIS') mQris -= jml;
+                if(dari === 'BRI') mBri -= jml;
+                if(dari === 'DANA') mDana -= jml;
+
+                if(tujuan === 'Cash') mCash += jml;
+                if(tujuan === 'QRIS') mQris += jml;
+                if(tujuan === 'BRI') mBri += jml;
+                if(tujuan === 'DANA') mDana += jml;
             });
 
-            document.getElementById('subMasukCash').innerText = formatRupiah(subMasukCash - subKeluarCash + subTransferCash);
-            document.getElementById('subMasukQris').innerText = formatRupiah(subMasukQris - subKeluarQris + subTransferQris);
-            document.getElementById('subMasukBri').innerText = formatRupiah(subMasukBri - subKeluarBri + subTransferBri);
-            document.getElementById('subMasukDana').innerText = formatRupiah(subMasukDana - subKeluarDana + subTransferDana);
+            document.getElementById('subMasukCash').innerText = formatRupiah(mCash);
+            document.getElementById('subMasukQris').innerText = formatRupiah(mQris);
+            document.getElementById('subMasukBri').innerText = formatRupiah(mBri);
+            document.getElementById('subMasukDana').innerText = formatRupiah(mDana);
 
             document.getElementById('subKeluarCash').innerText = formatRupiah(subKeluarCash);
             document.getElementById('subKeluarQris').innerText = formatRupiah(subKeluarQris);
             document.getElementById('subKeluarBri').innerText = formatRupiah(subKeluarBri);
             document.getElementById('subKeluarDana').innerText = formatRupiah(subKeluarDana);
 
-            document.getElementById('saldoBersih').innerText = formatRupiah(totalMasukVal - totalKeluarVal);
+            const totalSaldoBersih = (totalMasukVal - totalKeluarVal);
+            document.getElementById('saldoBersih').innerText = formatRupiah(totalSaldoBersih);
 
             // TABEL UTANG
             const tbodyUtang = document.getElementById('tabelUtangBody');
             tbodyUtang.innerHTML = '';
             let totalUtangVal = 0;
-            const waktuSekarang = new Date();
 
             const filteredUtang = utang.filter(item => item.nama.toLowerCase().includes(queryUtang) && filterBerdasarkanTanggal(item, filterUtangVal));
 
             if (filteredUtang.length === 0) {
-                tbodyUtang.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 text-xs">Tidak ada data ditemukan</td></tr>`;
+                tbodyUtang.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 text-xs">Tidak ada data utang ditemukan</td></tr>`;
             } else {
+                const hariIniObj = new Date();
                 filteredUtang.forEach(item => {
-                    let isJatuhTempo = false;
-                    if (!item.lunas && item.tanggal) {
-                        const selisihHari = (waktuSekarang - new Date(item.tanggal)) / (1000 * 60 * 60 * 24);
-                        if (selisihHari > 7) isJatuhTempo = true;
+                    if (!item.lunas) {
+                        totalUtangVal += item.jumlah;
+                    }
+
+                    let statusBadge = '';
+                    if (item.lunas) {
+                        statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950 text-emerald-600">Lunas</span>`;
+                    } else {
+                        const tglUtangObj = new Date(item.tanggal);
+                        const selisihHari = Math.floor((hariIniObj - tglUtangObj) / (1000 * 60 * 60 * 24));
+                        if (selisihHari > 7) {
+                            statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-50 dark:bg-rose-950 text-rose-600 animate-pulse" title="Sudah lewat ${selisihHari} hari">Jatuh Tempo</span>`;
+                        } else {
+                            statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950 text-amber-600">Belum Lunas</span>`;
+                        }
                     }
 
                     tbodyUtang.innerHTML += `
-                        <tr class="hover:bg-slate-50/85 dark:hover:bg-slate-800/50 transition ${item.lunas ? 'opacity-50' : ''}">
+                        <tr class="hover:bg-slate-50/85 dark:hover:bg-slate-800/50 transition">
                             <td class="p-3.5 whitespace-nowrap">
                                 <div class="flex flex-col gap-1.5">
                                     <input type="date" value="${item.tanggal}" onchange="ubahTanggalData(${item.id}, this.value)" class="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200">
                                     <input type="time" value="${item.jam}" onchange="ubahJamData(${item.id}, this.value)" class="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200">
                                 </div>
                             </td>
-                            <td class="p-3.5 font-medium ${item.lunas ? 'line-through text-slate-400' : 'text-slate-700 dark:text-slate-200'}">
-                                ${item.nama} ${isJatuhTempo ? '<span class="ml-2 inline-block px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-100 text-rose-600 animate-pulse">⚠️ Jatuh Tempo</span>' : ''}
-                            </td>
+                            <td class="p-3.5 text-slate-700 dark:text-slate-200 font-medium">${item.nama}</td>
                             <td class="p-3.5 font-semibold text-amber-600 dark:text-amber-400">${formatRupiah(item.jumlah)}</td>
-                            <td class="p-3.5 text-center">
-                                <button onclick="toggleLunas(${item.id})" class="px-3 py-1 text-xs rounded-full font-bold transition shadow-sm ${item.lunas ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' : 'bg-amber-100 text-amber-700 hover:bg-amber-200'}">
-                                    ${item.lunas ? '✓ Lunas' : 'Belum Lunas'}
-                                </button>
+                            <td class="p-3.5 text-center">${statusBadge}</td>
+                            <td class="p-3.5 text-center flex items-center justify-center gap-2">
+                                <button onclick="toggleLunas(${item.id})" class="px-3 py-1 rounded-lg text-xs font-bold transition ${item.lunas ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm'}">${item.lunas ? 'Batal Lunas' : 'Lunasi'}</button>
+                                <button onclick="hapusData(${item.id})" class="text-rose-400 hover:text-rose-600 p-1 rounded-lg text-xs font-semibold transition">Hapus</button>
                             </td>
-                            <td class="p-3.5 text-center"><button onclick="hapusData(${item.id})" class="text-rose-400 hover:text-rose-600 p-1 rounded-lg text-xs font-semibold transition">Hapus</button></td>
                         </tr>
                     `;
                 });
             }
 
-            utang.forEach(item => { if (!item.lunas) totalUtangVal += item.jumlah; });
             document.getElementById('totalUtang').innerText = formatRupiah(totalUtangVal);
 
+            // Render Chart Statistik
             renderChart(totalMasukVal, totalKeluarVal, totalUtangVal);
         }
     </script>
