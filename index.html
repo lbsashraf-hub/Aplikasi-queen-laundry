@@ -69,11 +69,10 @@
                 </div>
             </div>
 
-            <!-- Bagian Kanan Navbar (Tombol Install PWA, Tema & Burger Mobile) -->
+            <!-- Bagian Kanan Navbar -->
             <div class="flex items-center gap-2">
-                <!-- Tombol Install PWA ala IDLIX (Disembunyikan otomatis jika belum siap/sudah terinstal) -->
-                <button id="btnInstallApp" onclick="installPWA()" class="hidden items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition shadow-md shadow-sky-600/25 animate-bounce" title="Install Aplikasi ke HP">
-                    <span>📲</span> <span class="hidden sm:inline">Install</span> App
+                <button id="btnInstallApp" onclick="installPWA()" class="hidden md:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition shadow-md shadow-sky-600/25 animate-bounce" title="Install Aplikasi ke HP">
+                    <span>📲</span> <span>Install App</span>
                 </button>
 
                 <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition focus:outline-none" title="Ubah Tema Terang/Gelap">
@@ -101,20 +100,17 @@
             </div>
         </nav>
 
-        <!-- Menu Dropdown Mobile (Termasuk Tombol Unduh APK) -->
+        <!-- Menu Dropdown Mobile (Dipastikan tertutup default dengan kelas 'hidden') -->
         <div id="mobileMenu" class="hidden md:hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-4 shadow-xl mb-6 space-y-2 transition-colors">
+            <button onclick="installPWA()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition shadow-md shadow-sky-600/25 mb-2">
+                <span>📲</span> <span>Download / Install Aplikasi ke HP</span>
+            </button>
+            
             <button onclick="gantiHalaman('dashboard'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition">🏠 Beranda & Grafik</button>
             <button onclick="gantiHalaman('masuk'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-sky-600 hover:bg-sky-50 dark:hover:bg-slate-800 transition">📥 Halaman Duit Masuk</button>
             <button onclick="gantiHalaman('keluar'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-slate-800 transition">📤 Halaman Duit Keluar</button>
             <button onclick="gantiHalaman('transfer'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-indigo-600 hover:bg-indigo-50 dark:hover:bg-slate-800 transition">🔄 Halaman Transfer Saldo</button>
             <button onclick="gantiHalaman('utang'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-amber-600 hover:bg-amber-50 dark:hover:bg-slate-800 transition">📝 Halaman Daftar Utang</button>
-            
-            <!-- Tombol Unduh APK di dalam Menu Burger -->
-            <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
-                <a href="https://example.com/file-aplikasi.apk" download class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-md shadow-emerald-600/25">
-                    <span>📦</span> Unduh APK
-                </a>
-            </div>
         </div>
 
         <!-- Header & Ringkasan Keuangan -->
@@ -635,44 +631,28 @@
         let myChart = null;
         let memoTimeout = null;
         
-        // Variabel penangkap event PWA Install ala IDLIX
         let deferredPrompt;
 
+        // Tangkap event PWA asli
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            const btnInstall = document.getElementById('btnInstallApp');
-            if (btnInstall) {
-                btnInstall.classList.remove('hidden');
-                btnInstall.classList.add('flex');
-            }
         });
 
         async function installPWA() {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                console.log('Pengguna menginstal aplikasi Queen Laundry');
-            }
-            deferredPrompt = null;
-            const btnInstall = document.getElementById('btnInstallApp');
-            if (btnInstall) {
-                btnInstall.classList.add('hidden');
-                btnInstall.classList.remove('flex');
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('Pengguna menginstal aplikasi Queen Laundry');
+                }
+                deferredPrompt = null;
+            } else {
+                // Fallback instruksi manual jika dibuka dari memori internal / file lokal HP
+                alert("Karena aplikasi dibuka langsung dari file penyimpanan HP (bukan web server), untuk menginstalnya silakan ketuk menu titik tiga (⋮) di pojok kanan atas browser Chrome Anda, lalu pilih 'Tambahkan ke layar utama' (Add to Home screen) atau 'Instal Aplikasi'.");
             }
         }
 
-        window.addEventListener('appinstalled', () => {
-            const btnInstall = document.getElementById('btnInstallApp');
-            if (btnInstall) {
-                btnInstall.classList.add('hidden');
-                btnInstall.classList.remove('flex');
-            }
-            console.log('PWA berhasil diinstal.');
-        });
-
-        // Daftarkan Service Worker Otomatis
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js').catch(err => {
@@ -1117,7 +1097,6 @@
             const queryUtang = document.getElementById('searchUtang')?.value.toLowerCase() || '';
             const filterUtangVal = document.getElementById('filterTanggalUtang')?.value || 'semua';
 
-            // TABEL PEMASUKAN
             const tbodyMasuk = document.getElementById('tabelPemasukanBody');
             tbodyMasuk.innerHTML = '';
             let totalMasukVal = 0;
@@ -1156,7 +1135,6 @@
             });
             document.getElementById('totalPemasukan').innerText = formatRupiah(totalMasukVal);
 
-            // TABEL PENGELUARAN
             const tbodyKeluar = document.getElementById('tabelPengeluaranBody');
             tbodyKeluar.innerHTML = '';
             let totalKeluarVal = 0;
@@ -1195,7 +1173,7 @@
             });
             document.getElementById('totalPengeluaran').innerText = formatRupiah(totalKeluarVal);
 
-            // TABEL TRANSFER SALDO
+            let subTransferCash = 0, subTransferQris = 0, subTransferBri = 0, subTransferDana = 0;
             const tbodyTransfer = document.getElementById('tabelTransferBody');
             if(tbodyTransfer) {
                 tbodyTransfer.innerHTML = '';
@@ -1223,93 +1201,73 @@
                 }
             }
 
-            // HITUNG PERGERAKAN SALDO BERDASARKAN METODE (MASUK - KELUAR ± TRANSFER)
-            let mCash = subMasukCash - subKeluarCash;
-            let mQris = subMasukQris - subKeluarQris;
-            let mBri = subMasukBri - subKeluarBri;
-            let mDana = subMasukDana - subKeluarDana;
+            transfer.forEach(item => {
+                if (item.dari === 'Cash') subTransferCash -= item.jumlah;
+                else if (item.dari === 'QRIS') subTransferQris -= item.jumlah;
+                else if (item.dari === 'BRI') subTransferBri -= item.jumlah;
+                else if (item.dari === 'DANA') subTransferDana -= item.jumlah;
 
-            transfer.forEach(t => {
-                const jml = t.jumlah;
-                const dari = t.dari;
-                const tujuan = t.tujuan;
-
-                if(dari === 'Cash') mCash -= jml;
-                if(dari === 'QRIS') mQris -= jml;
-                if(dari === 'BRI') mBri -= jml;
-                if(dari === 'DANA') mDana -= jml;
-
-                if(tujuan === 'Cash') mCash += jml;
-                if(tujuan === 'QRIS') mQris += jml;
-                if(tujuan === 'BRI') mBri += jml;
-                if(tujuan === 'DANA') mDana += jml;
+                if (item.tujuan === 'Cash') subTransferCash += item.jumlah;
+                else if (item.tujuan === 'QRIS') subTransferQris += item.jumlah;
+                else if (item.tujuan === 'BRI') subTransferBri += item.jumlah;
+                else if (item.tujuan === 'DANA') subTransferDana += item.jumlah;
             });
 
-            document.getElementById('subMasukCash').innerText = formatRupiah(mCash);
-            document.getElementById('subMasukQris').innerText = formatRupiah(mQris);
-            document.getElementById('subMasukBri').innerText = formatRupiah(mBri);
-            document.getElementById('subMasukDana').innerText = formatRupiah(mDana);
+            document.getElementById('subMasukCash').innerText = formatRupiah(subMasukCash - subKeluarCash + subTransferCash);
+            document.getElementById('subMasukQris').innerText = formatRupiah(subMasukQris - subKeluarQris + subTransferQris);
+            document.getElementById('subMasukBri').innerText = formatRupiah(subMasukBri - subKeluarBri + subTransferBri);
+            document.getElementById('subMasukDana').innerText = formatRupiah(subMasukDana - subKeluarDana + subTransferDana);
 
             document.getElementById('subKeluarCash').innerText = formatRupiah(subKeluarCash);
             document.getElementById('subKeluarQris').innerText = formatRupiah(subKeluarQris);
             document.getElementById('subKeluarBri').innerText = formatRupiah(subKeluarBri);
             document.getElementById('subKeluarDana').innerText = formatRupiah(subKeluarDana);
 
-            const totalSaldoBersih = (totalMasukVal - totalKeluarVal);
-            document.getElementById('saldoBersih').innerText = formatRupiah(totalSaldoBersih);
+            document.getElementById('saldoBersih').innerText = formatRupiah(totalMasukVal - totalKeluarVal);
 
-            // TABEL UTANG
             const tbodyUtang = document.getElementById('tabelUtangBody');
             tbodyUtang.innerHTML = '';
             let totalUtangVal = 0;
+            const waktuSekarang = new Date();
 
             const filteredUtang = utang.filter(item => item.nama.toLowerCase().includes(queryUtang) && filterBerdasarkanTanggal(item, filterUtangVal));
 
             if (filteredUtang.length === 0) {
-                tbodyUtang.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 text-xs">Tidak ada data utang ditemukan</td></tr>`;
+                tbodyUtang.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 text-xs">Tidak ada data ditemukan</td></tr>`;
             } else {
-                const hariIniObj = new Date();
                 filteredUtang.forEach(item => {
-                    if (!item.lunas) {
-                        totalUtangVal += item.jumlah;
-                    }
-
-                    let statusBadge = '';
-                    if (item.lunas) {
-                        statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950 text-emerald-600">Lunas</span>`;
-                    } else {
-                        const tglUtangObj = new Date(item.tanggal);
-                        const selisihHari = Math.floor((hariIniObj - tglUtangObj) / (1000 * 60 * 60 * 24));
-                        if (selisihHari > 7) {
-                            statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-50 dark:bg-rose-950 text-rose-600 animate-pulse" title="Sudah lewat ${selisihHari} hari">Jatuh Tempo</span>`;
-                        } else {
-                            statusBadge = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950 text-amber-600">Belum Lunas</span>`;
-                        }
+                    let isJatuhTempo = false;
+                    if (!item.lunas && item.tanggal) {
+                        const selisihHari = (waktuSekarang - new Date(item.tanggal)) / (1000 * 60 * 60 * 24);
+                        if (selisihHari > 7) isJatuhTempo = true;
                     }
 
                     tbodyUtang.innerHTML += `
-                        <tr class="hover:bg-slate-50/85 dark:hover:bg-slate-800/50 transition">
+                        <tr class="hover:bg-slate-50/85 dark:hover:bg-slate-800/50 transition ${item.lunas ? 'opacity-50' : ''}">
                             <td class="p-3.5 whitespace-nowrap">
                                 <div class="flex flex-col gap-1.5">
                                     <input type="date" value="${item.tanggal}" onchange="ubahTanggalData(${item.id}, this.value)" class="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200">
                                     <input type="time" value="${item.jam}" onchange="ubahJamData(${item.id}, this.value)" class="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200">
                                 </div>
                             </td>
-                            <td class="p-3.5 text-slate-700 dark:text-slate-200 font-medium">${item.nama}</td>
-                            <td class="p-3.5 font-semibold text-amber-600 dark:text-amber-400">${formatRupiah(item.jumlah)}</td>
-                            <td class="p-3.5 text-center">${statusBadge}</td>
-                            <td class="p-3.5 text-center flex items-center justify-center gap-2">
-                                <button onclick="toggleLunas(${item.id})" class="px-3 py-1 rounded-lg text-xs font-bold transition ${item.lunas ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm'}">${item.lunas ? 'Batal Lunas' : 'Lunasi'}</button>
-                                <button onclick="hapusData(${item.id})" class="text-rose-400 hover:text-rose-600 p-1 rounded-lg text-xs font-semibold transition">Hapus</button>
+                            <td class="p-3.5 font-medium ${item.lunas ? 'line-through text-slate-400' : 'text-slate-700 dark:text-slate-200'}">
+                                ${item.nama} ${isJatuhTempo ? '<span class="ml-2 inline-block px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-100 text-rose-600 animate-pulse">⚠️ Jatuh Tempo</span>' : ''}
                             </td>
+                            <td class="p-3.5 font-semibold text-amber-600 dark:text-amber-400">${formatRupiah(item.jumlah)}</td>
+                            <td class="p-3.5 text-center">
+                                <button onclick="toggleLunas(${item.id})" class="px-3 py-1 text-xs rounded-full font-bold transition shadow-sm ${item.lunas ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' : 'bg-amber-100 text-amber-700 hover:bg-amber-200'}">
+                                    ${item.lunas ? '✓ Lunas' : 'Belum Lunas'}
+                                </button>
+                            </td>
+                            <td class="p-3.5 text-center"><button onclick="hapusData(${item.id})" class="text-rose-400 hover:text-rose-600 p-1 rounded-lg text-xs font-semibold transition">Hapus</button></td>
                         </tr>
                     `;
                 });
             }
 
+            utang.forEach(item => { if (!item.lunas) totalUtangVal += item.jumlah; });
             document.getElementById('totalUtang').innerText = formatRupiah(totalUtangVal);
 
-            // Render Chart Statistik
             renderChart(totalMasukVal, totalKeluarVal, totalUtangVal);
         }
     </script>
