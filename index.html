@@ -90,7 +90,7 @@
             <!-- Bagian Kanan Navbar -->
             <div class="flex items-center gap-2">
                 <button id="btnInstallApp" onclick="installPWA()" class="hidden md:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition shadow-md shadow-sky-600/25 animate-bounce" title="Install Aplikasi ke HP">
-                    <span>📲</span> <span>Install App</span>
+                    <span>📱</span> <span>Install App</span>
                 </button>
 
                 <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition focus:outline-none" title="Ubah Tema Terang/Gelap">
@@ -114,21 +114,21 @@
                 <button onclick="gantiHalaman('masuk')" id="navMasuk" class="px-3 py-2 rounded-xl text-xs font-bold transition text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">📥 Masuk</button>
                 <button onclick="gantiHalaman('keluar')" id="navKeluar" class="px-3 py-2 rounded-xl text-xs font-bold transition text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">📤 Keluar</button>
                 <button onclick="gantiHalaman('transfer')" id="navTransfer" class="px-3 py-2 rounded-xl text-xs font-bold transition text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">🔄 Transfer</button>
-                <button onclick="gantiHalaman('utang')" id="navUtang" class="px-3 py-2 rounded-xl text-xs font-bold transition text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">📝 Utang</button>
+                <button onclick="gantiHalaman('utang')" id="navUtang" class="px-3 py-2 rounded-xl text-xs font-bold transition text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">📜 Utang</button>
             </div>
         </nav>
 
-        <!-- Menu Dropdown Mobile (Dipastikan tertutup default dengan kelas 'hidden') -->
+        <!-- Menu Dropdown Mobile -->
         <div id="mobileMenu" class="hidden md:hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-4 shadow-xl mb-6 space-y-2 transition-colors">
             <button onclick="installPWA()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition shadow-md shadow-sky-600/25 mb-2">
-                <span>📲</span> <span>Download / Install Aplikasi ke HP</span>
+                <span>📱</span> <span>Download / Install Aplikasi ke HP</span>
             </button>
             
             <button onclick="gantiHalaman('dashboard'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition">🏠 Beranda & Grafik</button>
             <button onclick="gantiHalaman('masuk'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-sky-600 hover:bg-sky-50 dark:hover:bg-slate-800 transition">📥 Halaman Duit Masuk</button>
             <button onclick="gantiHalaman('keluar'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-slate-800 transition">📤 Halaman Duit Keluar</button>
             <button onclick="gantiHalaman('transfer'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-indigo-600 hover:bg-indigo-50 dark:hover:bg-slate-800 transition">🔄 Halaman Transfer Saldo</button>
-            <button onclick="gantiHalaman('utang'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-amber-600 hover:bg-amber-50 dark:hover:bg-slate-800 transition">📝 Halaman Daftar Utang</button>
+            <button onclick="gantiHalaman('utang'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-amber-600 hover:bg-amber-50 dark:hover:bg-slate-800 transition">📜 Halaman Daftar Utang</button>
         </div>
 
         <!-- Header & Ringkasan Keuangan -->
@@ -213,7 +213,7 @@
             </div>
         </header>
 
-        <!-- ================= HALAMAN 1: BERANDA & INPUT (DEFAULT) ================= -->
+        <!-- ================= HALAMAN 1: BERANDA & INPUT ================= -->
         <div id="pageDashboard" class="space-y-6">
             
             <!-- Grafik Statistik Keuangan -->
@@ -380,7 +380,7 @@
                 <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 transition hover:shadow-md flex flex-col justify-between">
                     <div>
                         <div class="flex items-center gap-3 mb-4">
-                            <div class="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950 text-amber-600 flex items-center justify-center font-bold text-lg">📝</div>
+                            <div class="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950 text-amber-600 flex items-center justify-center font-bold text-lg">📜</div>
                             <div>
                                 <h3 class="font-bold text-slate-800 dark:text-white">Catat Utang</h3>
                                 <p class="text-xs text-slate-400">Pelanggan belum bayar</p>
@@ -417,7 +417,7 @@
                     <button onclick="gantiHalaman('masuk')" class="px-4 py-2.5 rounded-xl bg-sky-50 dark:bg-sky-950 text-sky-700 dark:text-sky-300 font-bold text-xs hover:bg-sky-100 transition">📥 Masuk</button>
                     <button onclick="gantiHalaman('keluar')" class="px-4 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-300 font-bold text-xs hover:bg-rose-100 transition">📤 Keluar</button>
                     <button onclick="gantiHalaman('transfer')" class="px-4 py-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-xs hover:bg-indigo-100 transition">🔄 Transfer</button>
-                    <button onclick="gantiHalaman('utang')" class="px-4 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-bold text-xs hover:bg-amber-100 transition">📝 Utang</button>
+                    <button onclick="gantiHalaman('utang')" class="px-4 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 font-bold text-xs hover:bg-amber-100 transition">📜 Utang</button>
                 </div>
             </div>
         </div>
@@ -544,7 +544,7 @@
             <div class="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 transition-colors">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <div>
-                        <h3 class="text-xl font-bold text-slate-800 dark:text-white">📝 Halaman Daftar Utang Pelanggan</h3>
+                        <h3 class="text-xl font-bold text-slate-800 dark:text-white">📜 Halaman Daftar Utang Pelanggan</h3>
                         <p class="text-xs text-slate-400">*Utang yang berumur lebih dari 7 hari otomatis mendeteksi status "Jatuh Tempo".</p>
                     </div>
                     <div class="flex items-center gap-2">
@@ -684,7 +684,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            // Animasi Opening Splash Screen (Diperpanjang menjadi 3.5 detik agar lebih lama dinikmati)
+            // Animasi Opening Splash Screen
             setTimeout(() => {
                 const splash = document.getElementById('splashScreen');
                 splash.style.opacity = '0';
@@ -693,7 +693,8 @@
                 }, 1000);
             }, 3500);
 
-            if (sessionStorage.getItem('queen_laundry_auth') === 'true') {
+            // Perubahan Logika: Menggunakan localStorage agar sandi tetap tersimpan (tetap login)
+            if (localStorage.getItem('queen_laundry_auth') === 'true') {
                 bukaAplikasi();
             }
 
@@ -715,7 +716,8 @@
             const errorEl = document.getElementById('sandiError');
 
             if (sandiInput === SANDI_RAHASIA) {
-                sessionStorage.setItem('queen_laundry_auth', 'true');
+                // Simpan ke localStorage agar tidak perlu login berulang kali
+                localStorage.setItem('queen_laundry_auth', 'true');
                 bukaAplikasi();
             } else {
                 errorEl.classList.remove('hidden');
@@ -732,7 +734,8 @@
         }
 
         function logoutApp() {
-            sessionStorage.removeItem('queen_laundry_auth');
+            // Hapus dari localStorage untuk mengunci kembali aplikasi
+            localStorage.removeItem('queen_laundry_auth');
             document.getElementById('appContainer').classList.add('hidden');
             document.getElementById('pageLogin').classList.remove('hidden');
             document.getElementById('inputSandi').value = '';
