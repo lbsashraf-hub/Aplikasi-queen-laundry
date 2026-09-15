@@ -1,3 +1,18 @@
-self.addEventListener('fetch', function (event) {
-  // Kosongkan atau biarkan seperti ini agar memenuhi syarat PWA
+self.addEventListener('install', (e) => {
+    e.waitUntil(
+        caches.open('queen-laundry-v1').then((cache) => {
+            return cache.addAll([
+                '/',
+                '/index.html'
+            ]);
+        })
+    );
+});
+
+self.addEventListener('fetch', (e) => {
+    e.respondWith(
+        caches.match(e.request).then((response) => {
+            return response || fetch(e.request);
+        })
+    );
 });
