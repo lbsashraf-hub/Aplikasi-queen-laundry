@@ -69,11 +69,16 @@
                 </div>
             </div>
 
-            <!-- Bagian Kanan Navbar (Tombol Install, Tema & Burger Mobile) -->
+            <!-- Bagian Kanan Navbar (Tombol Unduh APK, Install, Tema & Burger Mobile) -->
             <div class="flex items-center gap-2">
+                <!-- Tombol Unduh APK -->
+                <a href="https://example.com/file-aplikasi.apk" download class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-md shadow-emerald-600/25" title="Unduh File APK Android">
+                    <span>📦</span> <span class="hidden sm:inline">Unduh</span> APK
+                </a>
+
                 <!-- Tombol Install PWA ala IDLIX (Disembunyikan otomatis jika belum siap/sudah terinstal) -->
                 <button id="btnInstallApp" onclick="installPWA()" class="hidden items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition shadow-md shadow-sky-600/25 animate-bounce" title="Install Aplikasi ke HP">
-                    <span>📲</span> <span>Install App</span>
+                    <span>📲</span> <span class="hidden sm:inline">Install</span> App
                 </button>
 
                 <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition focus:outline-none" title="Ubah Tema Terang/Gelap">
