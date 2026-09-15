@@ -69,13 +69,8 @@
                 </div>
             </div>
 
-            <!-- Bagian Kanan Navbar (Tombol Unduh APK, Install, Tema & Burger Mobile) -->
+            <!-- Bagian Kanan Navbar (Tombol Install PWA, Tema & Burger Mobile) -->
             <div class="flex items-center gap-2">
-                <!-- Tombol Unduh APK -->
-                <a href="https://example.com/file-aplikasi.apk" download class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-md shadow-emerald-600/25" title="Unduh File APK Android">
-                    <span>📦</span> <span class="hidden sm:inline">Unduh</span> APK
-                </a>
-
                 <!-- Tombol Install PWA ala IDLIX (Disembunyikan otomatis jika belum siap/sudah terinstal) -->
                 <button id="btnInstallApp" onclick="installPWA()" class="hidden items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition shadow-md shadow-sky-600/25 animate-bounce" title="Install Aplikasi ke HP">
                     <span>📲</span> <span class="hidden sm:inline">Install</span> App
@@ -106,13 +101,20 @@
             </div>
         </nav>
 
-        <!-- Menu Dropdown Mobile -->
+        <!-- Menu Dropdown Mobile (Termasuk Tombol Unduh APK) -->
         <div id="mobileMenu" class="hidden md:hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-4 shadow-xl mb-6 space-y-2 transition-colors">
             <button onclick="gantiHalaman('dashboard'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition">🏠 Beranda & Grafik</button>
             <button onclick="gantiHalaman('masuk'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-sky-600 hover:bg-sky-50 dark:hover:bg-slate-800 transition">📥 Halaman Duit Masuk</button>
             <button onclick="gantiHalaman('keluar'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-slate-800 transition">📤 Halaman Duit Keluar</button>
             <button onclick="gantiHalaman('transfer'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-indigo-600 hover:bg-indigo-50 dark:hover:bg-slate-800 transition">🔄 Halaman Transfer Saldo</button>
             <button onclick="gantiHalaman('utang'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-amber-600 hover:bg-amber-50 dark:hover:bg-slate-800 transition">📝 Halaman Daftar Utang</button>
+            
+            <!-- Tombol Unduh APK di dalam Menu Burger -->
+            <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                <a href="https://example.com/file-aplikasi.apk" download class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-md shadow-emerald-600/25">
+                    <span>📦</span> Unduh APK
+                </a>
+            </div>
         </div>
 
         <!-- Header & Ringkasan Keuangan -->
