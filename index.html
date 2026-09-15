@@ -616,6 +616,19 @@
 
     <!-- Script Logika, Supabase & PWA Handler -->
     <script>
+        // Pendaftaran Service Worker (PWA)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then((reg) => {
+                        console.log('Service Worker berhasil didaftarkan dengan scope:', reg.scope);
+                    })
+                    .catch((err) => {
+                        console.error('Pendaftaran Service Worker gagal:', err);
+                    });
+            });
+        }
+
         const SUPABASE_URL = 'https://uxutxeclfcvcvdiydmpw.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_UMV1G-z6vj5x0sRKlvZfVA_ap4qZFkA';
         const SANDI_RAHASIA = 'kasmoney1234';
@@ -651,14 +664,6 @@
                 // Fallback instruksi manual jika dibuka dari memori internal / file lokal HP
                 alert("Karena aplikasi dibuka langsung dari file penyimpanan HP (bukan web server), untuk menginstalnya silakan ketuk menu titik tiga (⋮) di pojok kanan atas browser Chrome Anda, lalu pilih 'Tambahkan ke layar utama' (Add to Home screen) atau 'Instal Aplikasi'.");
             }
-        }
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(err => {
-                    console.log('ServiceWorker pendaftaran opsional: ', err);
-                });
-            });
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -1213,59 +1218,72 @@
                 else if (item.tujuan === 'DANA') subTransferDana += item.jumlah;
             });
 
-            document.getElementById('subMasukCash').innerText = formatRupiah(subMasukCash - subKeluarCash + subTransferCash);
-            document.getElementById('subMasukQris').innerText = formatRupiah(subMasukQris - subKeluarQris + subTransferQris);
-            document.getElementById('subMasukBri').innerText = formatRupiah(subMasukBri - subKeluarBri + subTransferBri);
-            document.getElementById('subMasukDana').innerText = formatRupiah(subMasukDana - subKeluarDana + subTransferDana);
+            const netCash = subMasukCash - subKeluarCash + subTransferCash;
+            const netQris = subMasukQris - subKeluarQris + subTransferQris;
+            const netBri = subMasukBri - subKeluarBri + subTransferBri;
+            const netDana = subMasukDana - subKeluarDana + subTransferDana;
+
+            document.getElementById('subMasukCash').innerText = formatRupiah(netCash);
+            document.getElementById('subMasukQris').innerText = formatRupiah(netQris);
+            document.getElementById('subMasukBri').innerText = formatRupiah(netBri);
+            document.getElementById('subMasukDana').innerText = formatRupiah(netDana);
 
             document.getElementById('subKeluarCash').innerText = formatRupiah(subKeluarCash);
             document.getElementById('subKeluarQris').innerText = formatRupiah(subKeluarQris);
             document.getElementById('subKeluarBri').innerText = formatRupiah(subKeluarBri);
             document.getElementById('subKeluarDana').innerText = formatRupiah(subKeluarDana);
 
-            document.getElementById('saldoBersih').innerText = formatRupiah(totalMasukVal - totalKeluarVal);
+            const saldoBersihVal = totalMasukVal - totalKeluarVal;
+            document.getElementById('saldoBersih').innerText = formatRupiah(saldoBersihVal);
 
-            const tbodyUtang = document.getElementById('tabelUtangBody');
-            tbodyUtang.innerHTML = '';
             let totalUtangVal = 0;
-            const waktuSekarang = new Date();
+            const tbodyUtang = document.getElementById('tabelUtangBody');
+            if(tbodyUtang) {
+                tbodyUtang.innerHTML = '';
+                const filteredUtang = utang.filter(item => item.nama.toLowerCase().includes(queryUtang) && filterBerdasarkanTanggal(item, filterUtangVal));
 
-            const filteredUtang = utang.filter(item => item.nama.toLowerCase().includes(queryUtang) && filterBerdasarkanTanggal(item, filterUtangVal));
+                if (filteredUtang.length === 0) {
+                    tbodyUtang.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 text-xs">Tidak ada data utang ditemukan</td></tr>`;
+                } else {
+                    filteredUtang.forEach(item => {
+                        if (!item.lunas) totalUtangVal += item.jumlah;
 
-            if (filteredUtang.length === 0) {
-                tbodyUtang.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 text-xs">Tidak ada data ditemukan</td></tr>`;
-            } else {
-                filteredUtang.forEach(item => {
-                    let isJatuhTempo = false;
-                    if (!item.lunas && item.tanggal) {
-                        const selisihHari = (waktuSekarang - new Date(item.tanggal)) / (1000 * 60 * 60 * 24);
-                        if (selisihHari > 7) isJatuhTempo = true;
-                    }
+                        let badgeStatus = '';
+                        const tglTransaksi = new Date(item.tanggal || Date.now());
+                        const selisihHari = (new Date() - tglTransaksi) / (1000 * 60 * 60 * 24);
 
-                    tbodyUtang.innerHTML += `
-                        <tr class="hover:bg-slate-50/85 dark:hover:bg-slate-800/50 transition ${item.lunas ? 'opacity-50' : ''}">
-                            <td class="p-3.5 whitespace-nowrap">
-                                <div class="flex flex-col gap-1.5">
-                                    <input type="date" value="${item.tanggal}" onchange="ubahTanggalData(${item.id}, this.value)" class="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200">
-                                    <input type="time" value="${item.jam}" onchange="ubahJamData(${item.id}, this.value)" class="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200">
-                                </div>
-                            </td>
-                            <td class="p-3.5 font-medium ${item.lunas ? 'line-through text-slate-400' : 'text-slate-700 dark:text-slate-200'}">
-                                ${item.nama} ${isJatuhTempo ? '<span class="ml-2 inline-block px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-100 text-rose-600 animate-pulse">⚠️ Jatuh Tempo</span>' : ''}
-                            </td>
-                            <td class="p-3.5 font-semibold text-amber-600 dark:text-amber-400">${formatRupiah(item.jumlah)}</td>
-                            <td class="p-3.5 text-center">
-                                <button onclick="toggleLunas(${item.id})" class="px-3 py-1 text-xs rounded-full font-bold transition shadow-sm ${item.lunas ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' : 'bg-amber-100 text-amber-700 hover:bg-amber-200'}">
-                                    ${item.lunas ? '✓ Lunas' : 'Belum Lunas'}
-                                </button>
-                            </td>
-                            <td class="p-3.5 text-center"><button onclick="hapusData(${item.id})" class="text-rose-400 hover:text-rose-600 p-1 rounded-lg text-xs font-semibold transition">Hapus</button></td>
-                        </tr>
-                    `;
-                });
+                        if (item.lunas) {
+                            badgeStatus = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">Lunas</span>`;
+                        } else if (selisihHari > 7) {
+                            badgeStatus = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 animate-pulse">Jatuh Tempo (>7hr)</span>`;
+                        } else {
+                            badgeStatus = `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">Belum Lunas</span>`;
+                        }
+
+                        tbodyUtang.innerHTML += `
+                            <tr class="hover:bg-slate-50/85 dark:hover:bg-slate-800/50 transition">
+                                <td class="p-3.5 whitespace-nowrap">
+                                    <div class="flex flex-col gap-1.5">
+                                        <input type="date" value="${item.tanggal}" onchange="ubahTanggalData(${item.id}, this.value)" class="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200">
+                                        <input type="time" value="${item.jam}" onchange="ubahJamData(${item.id}, this.value)" class="px-2 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200">
+                                    </div>
+                                </td>
+                                <td class="p-3.5 text-slate-700 dark:text-slate-200 font-medium">${item.nama}</td>
+                                <td class="p-3.5 font-semibold text-amber-600 dark:text-amber-400">${formatRupiah(item.jumlah)}</td>
+                                <td class="p-3.5 text-center">${badgeStatus}</td>
+                                <td class="p-3.5 text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <button onclick="toggleLunas(${item.id})" class="px-3 py-1 rounded-lg text-xs font-bold transition ${item.lunas ? 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 hover:bg-slate-200' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm shadow-emerald-600/20'}">
+                                            ${item.lunas ? 'Batalkan' : 'Lunasi'}
+                                        </button>
+                                        <button onclick="hapusData(${item.id})" class="text-rose-400 hover:text-rose-600 p-1 rounded-lg text-xs font-semibold transition">Hapus</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
             }
-
-            utang.forEach(item => { if (!item.lunas) totalUtangVal += item.jumlah; });
             document.getElementById('totalUtang').innerText = formatRupiah(totalUtangVal);
 
             renderChart(totalMasukVal, totalKeluarVal, totalUtangVal);
